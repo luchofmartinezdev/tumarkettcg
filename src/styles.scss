@@ -1,1 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
+/* src/styles.scss */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* src/styles.scss */
+app-cart-drawer {
+  position: relative;
+  z-index: 9999 !important;
+}
+
+/* Forzar que el Drawer sea visible si la clase está presente */
+.translate-x-0 {
+  transform: translateX(0) !important;
+}
+
+.translate-x-full {
+  transform: translateX(100%) !important;
+}

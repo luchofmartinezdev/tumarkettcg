@@ -1,0 +1,74 @@
+<footer class="bg-[#0a0a0a] border-t border-white/5 pt-16 pb-8 px-4 sm:px-6 lg:px-8 text-white">
+  <div class="mx-auto max-w-7xl">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+      
+      <div class="space-y-6">
+        <div class="text-3xl font-black italic tracking-tighter text-yellow-400">
+          {{ config.logoName }}<span class="text-white">.</span>
+        </div>
+        <p class="text-gray-400 text-sm leading-relaxed">
+          {{ config.footer.description }}
+        </p>
+        <div class="flex gap-4">
+          <a *ngFor="let social of config.footer.socials" [href]="social.url" 
+             class="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-yellow-400 hover:text-black transition-all">
+            <span class="text-xs font-bold">{{ social.platform[0] }}</span>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="text-sm font-black uppercase tracking-widest text-white mb-6">Navegación</h4>
+        <ul class="space-y-4">
+          <li *ngFor="let link of config.navLinks">
+            <a [href]="link.path" class="text-gray-400 hover:text-yellow-400 text-sm transition-colors uppercase font-bold tracking-tighter">
+              {{ link.label }}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-sm font-black uppercase tracking-widest text-white mb-6">Contacto</h4>
+        <ul class="space-y-4 text-sm text-gray-400">
+          <li class="flex items-center gap-3">
+            <span class="text-yellow-400">📍</span> {{ config.footer.address }}
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="text-yellow-400">📞</span> {{ config.footer.phone }}
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="text-yellow-400">✉️</span> {{ config.footer.email }}
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-sm font-black uppercase tracking-widest text-white mb-6">Newsletter</h4>
+        <p class="text-gray-400 text-sm mb-4">Recibí ofertas exclusivas en tu email.</p>
+        <div class="flex">
+          <input type="email" placeholder="Tu email" 
+                 class="bg-white/5 border border-white/10 rounded-l-md px-4 py-2 text-sm focus:outline-none focus:border-yellow-400 w-full">
+          <button class="bg-yellow-400 text-black px-4 py-2 rounded-r-md font-bold hover:bg-yellow-500 transition-colors">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-y border-white/5 py-8 mb-8 flex flex-wrap justify-center gap-8 grayscale opacity-50">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" class="h-6">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" class="h-8">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="h-6">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Bitcoin_logo.svg" alt="Bitcoin" class="h-6">
+    </div>
+
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600">
+      <p>© 2026 {{ config.logoName }} Store. Todos los derechos reservados.</p>
+      <div class="flex gap-6">
+        <a href="#" class="hover:text-white">Términos y Condiciones</a>
+        <a href="#" class="hover:text-white">Defensa del Consumidor</a>
+      </div>
+    </div>
+  </div>
+</footer>

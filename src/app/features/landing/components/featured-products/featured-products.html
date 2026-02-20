@@ -1,0 +1,169 @@
+<section class="bg-[#0a0a0a] py-12 px-4 sm:px-6 lg:px-8 min-h-screen">
+  <div class="mx-auto max-w-7xl">
+
+    <div class="flex flex-col lg:flex-row gap-12">
+
+      <aside class="space-y-8 p-6 bg-[#0c0c0c] rounded-3xl border border-white/5 sticky top-24">
+
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-black uppercase tracking-[0.3em] text-white italic">Filtros</h3>
+
+          @if (hasFilters()) {
+          <button (click)="clearAllFilters()"
+            class="text-[10px] font-black uppercase text-yellow-400 hover:text-white transition-colors underline decoration-2 underline-offset-4">
+            Limpiar Todo
+          </button>
+          }
+        </div>
+
+        <div class="space-y-4">
+          <h4 class="text-[10px] font-bold uppercase text-gray-500 tracking-widest italic">Franquicia</h4>
+          <div class="space-y-3">
+            @for (f of franchises; track f) {
+            <label class="flex items-center group cursor-pointer">
+              <input type="checkbox" [checked]="selectedFranchises().includes(f)"
+                (change)="selectedFranchises.set(toggleFilter(selectedFranchises(), f))" class="peer hidden">
+              <div
+                class="h-5 w-5 rounded border border-white/10 bg-white/5 peer-checked:bg-yellow-400 peer-checked:border-yellow-400 flex items-center justify-center transition-all">
+                <svg *ngIf="selectedFranchises().includes(f)" class="h-3.5 w-3.5 text-black" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span class="ml-3 text-xs font-bold uppercase italic tracking-tighter transition-colors"
+                [class]="selectedFranchises().includes(f) ? 'text-yellow-400' : 'text-gray-400 group-hover:text-white'">
+                {{ f }}
+              </span>
+            </label>
+            }
+          </div>
+        </div>
+
+        <div class="h-px bg-white/5"></div>
+
+        <div class="space-y-4">
+          <h4 class="text-[10px] font-bold uppercase text-gray-500 tracking-widest italic">Categoría</h4>
+          <div class="space-y-3">
+            @for (c of categories; track c) {
+            <label class="flex items-center group cursor-pointer">
+              <input type="checkbox" [checked]="selectedCategories().includes(c)"
+                (change)="selectedCategories.set(toggleFilter(selectedCategories(), c))" class="peer hidden">
+              <div
+                class="h-5 w-5 rounded border border-white/10 bg-white/5 peer-checked:bg-blue-500 peer-checked:border-blue-500 flex items-center justify-center transition-all">
+                <svg *ngIf="selectedCategories().includes(c)" class="h-3.5 w-3.5 text-white" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span
+                class="ml-3 text-xs font-bold uppercase italic tracking-tighter transition-colors text-gray-400 group-hover:text-white">
+                {{ c }}
+              </span>
+            </label>
+            }
+          </div>
+        </div>
+
+        @if (selectedFranchises().includes(GameFranchise.POKEMON) || selectedFranchises().length === 0) {
+        <div class="h-px bg-white/5"></div>
+        <div class="space-y-4 animate-fade-in">
+          <h4 class="text-[10px] font-bold uppercase text-gray-500 tracking-widest italic">Expansión Pokémon</h4>
+          <div class="max-h-60 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+            @for (col of pokemonCollections; track col) {
+            <label class="flex items-center group cursor-pointer">
+              <input type="checkbox" [checked]="selectedCollections().includes(col)"
+                (change)="selectedCollections.set(toggleFilter(selectedCollections(), col))" class="peer hidden">
+              <div
+                class="h-5 w-5 rounded border border-white/10 bg-white/5 peer-checked:bg-white peer-checked:border-white flex items-center justify-center transition-all">
+                <svg *ngIf="selectedCollections().includes(col)" class="h-3.5 w-3.5 text-black" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <span
+                class="ml-3 text-[10px] font-bold uppercase italic tracking-tighter text-gray-400 group-hover:text-white">
+                {{ col }}
+              </span>
+            </label>
+            }
+          </div>
+        </div>
+        }
+
+        <div class="h-px bg-white/5"></div>
+
+        <label class="flex items-center justify-between cursor-pointer group">
+          <span
+            class="text-[10px] font-black uppercase text-gray-500 tracking-widest italic group-hover:text-white transition-colors">
+            Solo con Stock
+          </span>
+          <div class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" [checked]="onlyInStock()" (change)="onlyInStock.set(!onlyInStock())"
+              class="sr-only peer">
+            <div
+              class="w-9 h-5 bg-white/5 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-500 peer-checked:after:bg-yellow-400 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-yellow-400/20">
+            </div>
+          </div>
+        </label>
+
+      </aside>
+
+      <div class="flex-1">
+
+        <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
+          <div class="flex items-center gap-3">
+            <h1 class="text-3xl font-black italic text-white uppercase tracking-tighter">
+              Cartas <span class="text-yellow-400">Pokémon</span>
+            </h1>
+            <span class="rounded-full bg-white/5 px-3 py-1 text-[10px] font-bold text-gray-500 uppercase">
+              {{ filteredProducts().length }} Items
+            </span>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-black uppercase text-gray-500 tracking-widest">Ordenar por:</span>
+            <select (change)="sortSelected.set($any($event.target).value)"
+              class="bg-[#111] border border-white/10 rounded-lg px-4 py-2 text-[11px] font-bold text-white focus:outline-none focus:border-yellow-400 transition-all cursor-pointer">
+              <option *ngFor="let option of sortOptions" [value]="option">
+                {{ option }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div *ngIf="filteredProducts().length > 0; else noProducts"
+          class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <app-product-card *ngFor="let prod of filteredProducts()" [product]="prod"></app-product-card>
+        </div>
+
+        <ng-template #noProducts>
+          <div
+            class="flex flex-col items-center justify-center py-24 px-6 rounded-3xl border-2 border-dashed border-white/5 bg-[#111]/50 text-center">
+            <div class="relative mb-6">
+              <span class="text-7xl grayscale opacity-10 block transform -rotate-12">🃏</span>
+              <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl">🚫</span>
+            </div>
+
+            <h3 class="text-xl font-black text-white uppercase italic tracking-tighter">
+              Sin coincidencias en la Deck
+            </h3>
+
+            <p class="mt-2 text-gray-500 max-w-xs text-sm font-medium leading-relaxed">
+              No encontramos productos que cumplan con todos tus filtros actuales. Probá cambiando el idioma o la
+              categoría.
+            </p>
+
+            <div class="mt-8 flex flex-wrap justify-center gap-4">
+              <button
+                (click)="categorySelected.set('TODOS'); collectionSelected.set('TODAS'); languageSelected.set('TODOS'); onlyInStock.set(false)"
+                class="rounded-full bg-yellow-400 px-8 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-yellow-500 transition-all active:scale-95 shadow-lg shadow-yellow-400/10">
+                Resetear todos los filtros
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+
+    </div>
+  </div>
+</section>

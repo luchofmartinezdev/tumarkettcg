@@ -1,0 +1,56 @@
+<div class="group relative flex flex-col overflow-hidden rounded-2xl bg-[#111] border border-white/5 transition-all duration-300 hover:border-yellow-400/50"
+     [class.opacity-60]="!product.inStock"> <div class="relative aspect-square overflow-hidden bg-white p-6">
+    <div *ngIf="product.isNew && product.inStock" class="absolute left-3 top-3 z-10 rounded-sm bg-yellow-400 px-2 py-1 text-[9px] font-black uppercase text-black italic">
+      Nuevo
+    </div>
+
+    <div *ngIf="!product.inStock" class="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+      <span class="rounded-full bg-red-600 px-4 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-xl">
+        Agotado
+      </span>
+    </div>
+
+    <img 
+      [src]="product.image" 
+      [alt]="product.name" 
+      class="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+      [class.grayscale]="!product.inStock">
+  </div>
+
+  <div class="flex flex-1 flex-col p-5">
+    <div class="mb-2 flex gap-2">
+      <span [class]="getCategoryStyle()" class="inline-block border px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-full">
+        {{ product.category }}
+      </span>
+      <span class="inline-block border border-white/10 bg-white/5 px-2 py-0.5 text-[8px] font-black uppercase text-gray-400 rounded-full">
+        {{ product.language }}
+      </span>
+    </div>
+
+    <h3 class="mb-1 text-sm font-bold text-white uppercase leading-tight line-clamp-2 min-h-[2.5rem] italic">
+      <a [routerLink]="['/producto', product.id]">{{ product.name }}</a>
+    </h3>
+
+    <div class="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
+      <span class="text-xl font-black italic text-white tracking-tighter">
+        {{ product.price | currency:'ARS':'symbol':'1.0-0' }}
+      </span>
+      
+      <button 
+        (click)="addToCart()"
+        [disabled]="!product.inStock"
+        class="flex h-10 w-10 items-center justify-center rounded-full transition-all shadow-lg"
+        [ngClass]="product.inStock 
+          ? 'bg-yellow-400 text-black hover:scale-110' 
+          : 'bg-white/5 text-gray-600 cursor-not-allowed'">
+        
+        <svg *ngIf="product.inStock" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+        </svg>
+        <svg *ngIf="!product.inStock" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
