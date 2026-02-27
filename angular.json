@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "hadouken-web": {
+    "tumarket-tcg": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -24,6 +24,9 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "polyfills": [ 
+              "zone.js"
+            ],
             "assets": [
               "src/favicon.ico",
               "src/assets",
@@ -41,8 +44,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -64,10 +67,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "hadouken-web:build:production"
+              "buildTarget": "tumarket-tcg:build:production"
             },
             "development": {
-              "buildTarget": "hadouken-web:build:development"
+              "buildTarget": "tumarket-tcg:build:development"
             }
           },
           "defaultConfiguration": "development"

@@ -1,72 +1,55 @@
-export interface NavLink {
-  label: string;
-  path: string;
+export enum TradeType {
+  VENDO = 'Vendo',
+  BUSCO = 'Busco'
 }
 
-export enum Language {
-  ESPANOL = 'Español',
-  INGLES = 'Inglés',
-  JAPONES = 'Japonés'
+export enum Condition {
+  MINT = 'Impecable',
+  NEAR_MINT = 'Casi Nueva',
+  PLAYED = 'Usada',
+  POOR = 'Dañada'
 }
 
-export enum Category {
-  BOOSTER_BOXES = 'BOOSTER BOXES',
-  BOOSTER_PACKS = 'BOOSTER PACKS',
-  BOOSTER_BUNDLES = 'BOOSTER BUNDLES',
-  ETB = 'ELITE TRAINER BOXES',
-  TINS_CHESTS = 'TINS & CHESTS',
-  BLISTER_PACKS = 'BLISTER PACKS',
-  BINDER = 'Binder / Carpeta',
-  SLEEVES = 'Folios / Sleeves',
-  DECK_BOX = 'Deck Box'
-}
-
-export enum GameFranchise {
+export enum Franchise {
   POKEMON = 'Pokémon',
-  DIGIMON = 'Digimon',
-  DRAGON_BALL = 'Dragon Ball',
+  MAGIC = 'Magic',
+  YUGIOH = 'Yu-Gi-Oh!',
   ONE_PIECE = 'One Piece',
-  ACCESSORIES = 'Accesorios',
-  TODOS = "TODOS"
+  DRAGON_BALL = 'Dragon Ball Super',
+  LORCANA = 'Lorcana',
+  DIGIMON = 'Digimon'
+
 }
 
-export enum PokemonCollection {
-  MEGA_EVOLUTION = 'Mega Evolución',
-  SCARLET_VIOLET = 'Escarlata y Púrpura',
-  SWORD_SHIELD = 'Espada y Escudo'
-}
+export interface CardPost {
+  id: string;            // El ID del documento en Firestore
+  userId: string;        // <--- EL CAMPO CLAVE (El uid de Firebase Auth)
+  userName: string;      // El nombre para mostrar en la UI (ej: Lucho)
+  cardName: string;
+  franchise: Franchise;
+  price?: number;
+  condition: Condition;
+  type: TradeType;
+  whatsappContact: string;
+  createdAt: Date;       // O Timestamp si usás el formato nativo de Firebase
+  active: boolean;
+  description: string;
 
-export interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  franchise: GameFranchise;
-  category: Category;
-  inStock: boolean;
-
-  // --- Opcionales por diversidad de productos ---
-  brand?: string;             // 'Dragon Shield', 'The Pokémon Company'
-  collection?: PokemonCollection;
-  collectionImage?: string;
-  language?: Language;        // Opcional para accesorios
-  isNew?: boolean;
-  description?: string;
-  discountPrice?: number;     // Para ofertas relámpago
-  stockQuantity?: number;     // Para manejar urgencia: "Quedan 3"
+  // --- CAMPOS NUEVOS PARA IMÁGENES ---
+  imageUrl?: string;     // La URL pública para mostrar en la web (<img> src)
+  imagePath?: string;    // La ruta interna en Storage (ej: 'posts/123_foto.jpg')
 }
 
 export interface SiteConfig {
   logoName: string;
-  navLinks: NavLink[];
-  // Agregamos el objeto hero aquí
+  navLinks: { label: string; path: string }[];
   hero: {
     title: string;
     subtitle: string;
     ctaText: string;
-    imageUrl: string; // Para que la imagen también sea personalizable
+    imageUrl: string;
   };
-  featuredProducts: Product[];
+  featuredProducts: CardPost[];
   footer: {
     description: string;
     address: string;
@@ -74,17 +57,4 @@ export interface SiteConfig {
     email: string;
     socials: { platform: string; url: string }[];
   };
-
-
-}
-
-export interface CartItem extends Product {
-  quantity: number;
-}
-
-export enum ProductSort {
-  RELEVANCIA = 'Relevancia',
-  PRECIO_MENOR = 'Precio: Menor a Mayor',
-  PRECIO_MAYOR = 'Precio: Mayor a Menor',
-  NOMBRE = 'Nombre: A-Z'
 }

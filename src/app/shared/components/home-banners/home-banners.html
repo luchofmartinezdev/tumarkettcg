@@ -1,0 +1,67 @@
+<div class="max-w-7xl mx-auto px-4 pt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+  <div (click)="navigateTo('vendo')" 
+       class="relative overflow-hidden group bg-slate-900 rounded-[3rem] p-8 md:p-10 min-h-[320px] flex flex-col justify-between border border-slate-800 shadow-2xl shadow-blue-900/20 cursor-pointer transition-all duration-500 hover:-translate-y-2">
+    
+    <div class="absolute -right-10 -top-10 w-64 h-64 bg-blue-600/20 rounded-full blur-[80px] group-hover:bg-blue-600/30 transition-colors"></div>
+    <div class="absolute right-10 bottom-10 text-white/5 font-black text-9xl select-none group-hover:scale-110 transition-transform duration-700">TCG</div>
+
+    <div class="relative z-10">
+      <div class="inline-flex items-center gap-2 bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] mb-6">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+        </span>
+        Buscar
+      </div>
+      
+      <h2 class="text-4xl md:text-5xl font-black text-white leading-[0.9] uppercase tracking-tighter">
+        Completá tu <br><span class="text-blue-500">Colección.</span>
+      </h2>
+      
+      <p class="text-slate-400 text-sm mt-6 font-medium max-w-[280px] leading-relaxed">
+        Revisá los anuncios de vendedores y encontrá esa carta que te falta.
+      </p>
+    </div>
+    
+    <div class="relative z-10 flex items-center gap-4 text-white font-black text-xs uppercase tracking-[0.2em] group-hover:gap-6 transition-all duration-300">
+      Ver lo más reciente 
+      <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+      </svg>
+    </div>
+  </div>
+
+  <div (click)="navigateTo('busco')" 
+       class="relative overflow-hidden group bg-white border-2 border-emerald-100 rounded-[3rem] p-8 md:p-10 min-h-[320px] flex flex-col justify-between shadow-xl shadow-emerald-900/5 cursor-pointer transition-all duration-500 hover:-translate-y-2">
+    
+    <div class="absolute -right-10 -top-10 w-64 h-64 bg-emerald-100 rounded-full blur-[80px] group-hover:bg-emerald-200 transition-colors"></div>
+    <div class="absolute right-10 bottom-10 text-emerald-500/5 font-black text-9xl select-none group-hover:scale-110 transition-transform duration-700">WNT</div>
+
+    <div class="relative z-10">
+      <div class="inline-flex items-center gap-2 bg-emerald-500 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-[0.2em] mb-6 shadow-lg shadow-emerald-200">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+        </span>
+        Vender
+      </div>
+      
+      <h2 class="text-4xl md:text-5xl font-black text-slate-900 leading-[0.9] uppercase tracking-tighter">
+        Vendé tus <br><span class="text-emerald-500">Repetidas.</span>
+      </h2>
+      
+      <p class="text-slate-500 text-sm mt-6 font-medium max-w-[280px] leading-relaxed">
+        Mirá qué están buscando otros coleccionistas y convertí tus cartas en efectivo.
+      </p>
+    </div>
+
+    <div class="relative z-10 flex items-center gap-4 text-emerald-600 font-black text-xs uppercase tracking-[0.2em] group-hover:gap-6 transition-all duration-300">
+      Ver pedidos activos
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+      </svg>
+    </div>
+  </div>
+
+</div>

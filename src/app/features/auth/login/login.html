@@ -1,0 +1,50 @@
+<div class="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4 relative overflow-hidden">
+
+  <div class="w-full max-w-[440px] relative">
+    <div
+      class="bg-white border border-slate-200 p-10 md:p-12 rounded-[3.5rem] shadow-2xl shadow-blue-900/5 text-center">
+
+      <div class="relative inline-block mb-10">
+        <div
+          class="h-24 w-24 bg-blue-600 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-blue-300 rotate-6 transition-all duration-500">
+          <span class="text-4xl font-black text-white italic tracking-tighter">TM</span>
+        </div>
+        <span
+          class="absolute -bottom-2 -right-2 bg-slate-900 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
+          OFICIAL
+        </span>
+      </div>
+
+      <div class="space-y-3 mb-12">
+        <h2 class="text-4xl font-extrabold text-slate-900 tracking-tight uppercase leading-none">
+          TuMarket<span class="text-blue-600">TCG</span>
+        </h2>
+        <p class="text-slate-500 font-medium text-sm leading-relaxed max-w-[280px] mx-auto">
+          La red de intercambio de cartas más grande de Córdoba.
+        </p>
+      </div> 
+      <div class="flex justify-center w-full mt-4">
+        <button (click)="onGoogleLogin()"
+          class="flex items-center justify-center gap-2 bg-white text-gray-700 font-semibold py-2 px-6 border border-gray-300 rounded-full shadow hover:bg-gray-50 transition">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo"
+            class="w-6 h-6">
+          Continuar con Google
+        </button>
+      </div>
+
+      <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-8">Protección vía Google Identity</p>
+
+      <div class="grid grid-cols-2 gap-4 pt-8 border-t border-slate-50">
+        <div class="text-left">
+          <p class="text-[10px] font-black text-slate-800 uppercase">Seguro</p>
+          <p class="text-[9px] text-slate-400 font-medium">Validación de cuentas</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[10px] font-black text-slate-800 uppercase">Directo</p>
+          <p class="text-[9px] text-slate-400 font-medium">Tratos por WhatsApp</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

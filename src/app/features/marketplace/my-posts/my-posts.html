@@ -1,0 +1,119 @@
+<div class="min-h-screen bg-[#f8fafc] pt-24 pb-20 px-4">
+    <div class="max-w-5xl mx-auto">
+
+        @if (myPosts$ | async; as posts) {
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-slate-900 uppercase tracking-tight">
+                        Mis <span class="text-blue-600">Publicaciones</span>
+                    </h2>
+                    <p class="text-slate-500 font-medium text-sm mt-2">
+                        Gestioná tus anuncios activos y pausados en el market.
+                    </p>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="bg-white border border-slate-200 px-4 py-2 rounded-2xl shadow-sm">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total</p>
+                        <p class="text-lg font-bold text-slate-900">{{ posts.length }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-[2.5rem] shadow-xl border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/50 border-b border-slate-200">
+                                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Carta / Producto</th>
+                                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">Estado</th>
+                                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Precio</th>
+                                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            
+                            @for (post of posts; track post.id) {
+                                <tr class="group hover:bg-slate-50/50 transition-colors">
+
+                                    <td class="px-8 py-6">
+                                        <div class="flex flex-col">
+                                            <span class="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                                                {{ post.cardName }}
+                                            </span>
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-1">
+                                                {{ post.franchise }} · {{ post.condition }}
+                                            </span>
+                                        </div>
+                                    </td>
+
+                                    <td class="px-8 py-6 text-center">
+                                        <span [class]="post.active 
+                                            ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
+                                            : 'bg-slate-100 text-slate-400 border-slate-200'"
+                                            class="px-3 py-1 rounded-full text-[9px] font-black uppercase border tracking-widest">
+                                            {{ post.active ? 'Activo' : 'Pausado' }}
+                                        </span>
+                                    </td>
+
+                                    <td class="px-8 py-6">
+                                        <span class="text-sm font-black text-slate-700">
+                                            {{ post.price ? '$' + (post.price | number) : 'A convenir' }}
+                                        </span>
+                                    </td>
+
+                                    <td class="px-8 py-6 text-right">
+                                        <div class="flex justify-end gap-4">
+                                            <a [routerLink]="['/editar', post.id]"
+                                                class="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-800 py-1">
+                                                Editar
+                                            </a>
+                                            <button (click)="onToggleStatus(post.id, post.active)"
+                                                [title]="post.active ? 'Quitar de la Home' : 'Mostrar en la Home'"
+                                                class="text-[10px] font-black uppercase tracking-widest transition-all duration-200 py-1"
+                                                [class]="post.active ? 'text-amber-500 hover:text-amber-600' : 'text-emerald-500 hover:text-emerald-600'">
+                                                {{ post.active ? 'Pausar' : 'Activar' }}
+                                            </button>
+
+                                            <button (click)="onDelete(post.id)" title="Eliminar permanentemente"
+                                                class="text-[10px] font-black text-red-400 hover:text-red-600 uppercase tracking-widest transition-all duration-200 py-1">
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            } @empty {
+                                <tr>
+                                    <td colspan="4" class="px-8 py-20 text-center">
+                                        <div class="max-w-xs mx-auto">
+                                            <p class="text-slate-400 font-bold uppercase text-xs tracking-[0.2em] mb-4">
+                                                No tenés anuncios todavía
+                                            </p>
+                                            <a routerLink="/publicar"
+                                                class="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95">
+                                                Publicar mi primera carta
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        } @else {
+            <div class="flex justify-center items-center py-20">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+        }
+
+        <div class="mt-8 p-6 bg-blue-50/50 rounded-3xl border border-blue-100">
+            <p class="text-[11px] text-blue-600 font-medium leading-relaxed">
+                <span class="font-bold uppercase tracking-widest mr-2">Tip:</span>
+                Si ya vendiste tu carta, recordá <strong>Eliminarla</strong> o <strong>Pausarla</strong> para que dejen de escribirte a tu WhatsApp.
+            </p>
+        </div>
+
+    </div>
+</div>

@@ -18,3 +18,26 @@ app-cart-drawer {
 .translate-x-full {
   transform: translateX(100%) !important;
 }
+
+html {
+  scroll-behavior: smooth;
+  background-color: #0a0a0a;
+}
+
+/* Scrollbar minimalista para que no rompa el diseño oscuro */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #facc15;
+}
