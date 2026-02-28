@@ -1,0 +1,86 @@
+<div class="animate-in fade-in duration-500">
+    <div class="mb-8">
+        <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tighter">Mis <span
+                class="text-blue-600">Contactos</span></h2>
+        <p class="text-slate-400 font-medium text-sm mt-1">Historial de vendedores que contactaste.</p>
+    </div>
+
+    @if (contacts$ | async; as contacts) {
+
+    @if (contacts.length > 0) {
+    <div class="flex flex-col gap-3">
+        @for (record of contacts; track record.id) {
+        <div
+            class="group flex items-center gap-5 bg-white rounded-3xl p-4 border border-slate-100 shadow-md shadow-slate-200/40 hover:-translate-y-0.5 transition-all duration-300">
+
+            <!-- Tipo badge -->
+            <div [class]="record.type === TradeType.VENDO ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'"
+                class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+            </div>
+
+            <!-- Info -->
+            <div class="flex-grow min-w-0">
+                <h3 class="text-sm font-black text-slate-900 uppercase tracking-tighter truncate">
+                    {{ record.cardName }}
+                </h3>
+                <div class="flex items-center gap-3 mt-1">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-tight">
+                        {{ record.sellerName }}
+                    </span>
+                    <span class="text-[9px] font-bold text-slate-300">·</span>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-tight">
+                        {{ record.contactedAt | date:'dd/MM/yyyy - HH:mm' }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <button (click)="recontact(record)"
+                    class="h-9 w-9 bg-slate-900 rounded-xl flex items-center justify-center text-white shadow-md hover:bg-blue-600 transition-all active:scale-90"
+                    title="Volver a contactar">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </button>
+                <button (click)="deleteContact(record.id)"
+                    class="h-9 w-9 rounded-xl flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all"
+                    title="Eliminar del historial">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+        }
+    </div>
+
+    } @else {
+    <div
+        class="flex flex-col items-center justify-center py-24 px-4 bg-slate-50/50 rounded-[3rem] border-2 border-dashed border-slate-100">
+        <div
+            class="h-20 w-20 bg-white rounded-[2rem] flex items-center justify-center shadow-xl shadow-slate-200/50 mb-6 text-slate-300">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+        </div>
+        <h3 class="text-xl font-black text-slate-900 uppercase tracking-tighter">Sin contactos aún</h3>
+        <p class="text-slate-400 text-sm font-medium mt-2 max-w-[250px] mx-auto leading-relaxed text-center">
+            Cuando contactes a un vendedor, aparecerá acá su historial.
+        </p>
+    </div>
+    }
+
+    } @else {
+    <div class="flex justify-center items-center py-20">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    </div>
+    }
+</div>

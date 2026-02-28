@@ -1,0 +1,12 @@
+<div class="flex items-center gap-3 mb-8 animate-in fade-in slide-in-from-right duration-700">
+    <div class="flex p-1.5 bg-white border border-slate-200 rounded-[1.5rem] gap-1 shadow-sm">
+        @for (option of options; track option) {
+        <button (click)="changeSort(option)" [class]="selectedOption() === option 
+          ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' 
+          : 'text-slate-400 hover:bg-slate-50'"
+            class="px-5 py-2 rounded-[1.2rem] text-[10px] font-black uppercase tracking-widest transition-all duration-300">
+            {{ option }}
+        </button>
+        }
+    </div>
+</div>

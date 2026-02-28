@@ -3,6 +3,12 @@ export enum TradeType {
   BUSCO = 'Busco'
 }
 
+export enum SortOption {
+  RECENT = 'Más recientes',
+  AZ = 'Nombre (A-Z)',
+  ZA = 'Nombre (Z-A)'
+}
+
 export enum Condition {
   MINT = 'Impecable',
   NEAR_MINT = 'Casi Nueva',
@@ -57,4 +63,26 @@ export interface SiteConfig {
     email: string;
     socials: { platform: string; url: string }[];
   };
+}
+
+export interface ContactRecord {
+  id: string;
+  userId: string;          // quien contactó
+  sellerId: string;        // uid del vendedor
+  sellerName: string;      // nombre del vendedor
+  postId: string;          // id de la publicación
+  cardName: string;        // nombre de la carta
+  whatsappContact: string; // para el botón "volver a contactar"
+  type: TradeType;         // VENDO o BUSCO
+  contactedAt: Date;       // fecha del contacto
+}
+
+export interface FavoriteRecord {
+  id: string;
+  userId: string;
+  postId: string;
+  cardName: string;
+  imageUrl?: string;
+  franchise: Franchise;
+  savedAt: Date;
 }

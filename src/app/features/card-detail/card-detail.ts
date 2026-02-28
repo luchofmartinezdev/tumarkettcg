@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe, Location } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { CardService } from '../../core/services/card';
+import { CardService } from '../../core/services/cardService';
 import { CardPost, TradeType } from '../../core/models/site-config.model';
 
 @Component({
