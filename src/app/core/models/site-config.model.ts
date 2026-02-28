@@ -27,6 +27,24 @@ export enum Franchise {
 
 }
 
+export interface SellerRating {
+  id: string;
+  sellerId: string;
+  raterId: string;
+  stars: number;
+  createdAt: Date;
+}
+
+export interface UserProfile {
+  uid: string;
+  displayName: string;
+  photoURL?: string;
+  location?: string;        // ciudad/provincia opcional
+  showLocation: boolean;    // el usuario elige si mostrarla
+  totalSales: number;       // ventas realizadas
+  createdAt: Date;
+}
+
 export interface CardPost {
   id: string;            // El ID del documento en Firestore
   userId: string;        // <--- EL CAMPO CLAVE (El uid de Firebase Auth)
