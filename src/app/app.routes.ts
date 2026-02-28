@@ -68,5 +68,9 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: { tab: 'favoritos' }
     },
+    {
+        path: 'vendedor/:uid',
+        loadComponent: () => import('./features/seller-profile/seller-profile').then(m => m.SellerProfileComponent)
+    },
     { path: '**', redirectTo: '' }
 ];
