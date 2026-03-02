@@ -1,0 +1,40 @@
+<div class="flex flex-col gap-2 w-full">
+    @if (label) {
+    <label class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4">
+        {{ label }}
+    </label>
+    }
+
+    <div class="relative">
+        <button type="button" (click)="toggle()"
+            class="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 text-sm font-bold flex items-center justify-between outline-none focus:ring-4 focus:ring-blue-500/5 transition-all text-left">
+            <span [class.text-slate-300]="!value()">
+                {{ value() || placeholder }}
+            </span>
+            <svg class="w-4 h-4 text-slate-400 transition-transform duration-300" [class.rotate-180]="isOpen()"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+
+        @if (isOpen()) {
+        <div
+            class="absolute z-[100] w-full mt-2 bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-2 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div class="max-h-60 overflow-y-auto scrollbar-hide">
+                @for (opt of options; track opt) {
+                <button type="button" (click)="selectOption(opt)" class="w-full text-left px-5 py-3.5 rounded-xl text-xs font-bold uppercase tracking-wide transition-all
+                                   hover:bg-blue-50 hover:text-blue-600 flex items-center justify-between group"
+                    [class.bg-slate-50]="value() === opt">
+                    {{ opt }}
+                    @if (value() === opt) {
+                    <div class="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
+                    }
+                </button>
+                }
+            </div>
+        </div>
+
+        <div class="fixed inset-0 z-[90]" (click)="isOpen.set(false)"></div>
+        }
+    </div>
+</div>
