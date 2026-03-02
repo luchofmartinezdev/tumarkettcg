@@ -9,7 +9,7 @@ export enum SortOption {
   ZA = 'Nombre (Z-A)'
 }
 
-export enum Condition {
+export enum CardCondition {
   MINT = 'Impecable',
   NEAR_MINT = 'Casi Nueva',
   PLAYED = 'Usada',
@@ -51,6 +51,14 @@ export interface UserProfile {
   createdAt: Date;
 }
 
+export enum CardRarity {
+  COMMON = 'Común',
+  UNCOMMON = 'Poco común',
+  RARE = 'Raro',
+  ULTRA_RARE = 'Ultra raro',
+  SECRET_RARE = 'Raro secreto'
+}
+
 export interface CardPost {
   id: string;            // El ID del documento en Firestore
   userId: string;        // <--- EL CAMPO CLAVE (El uid de Firebase Auth)
@@ -58,13 +66,14 @@ export interface CardPost {
   cardName: string;
   franchise: Franchise;
   price?: number;
-  condition: Condition;
+  condition: CardCondition;
   type: TradeType;
   whatsappContact: string;
   createdAt: Date;       // O Timestamp si usás el formato nativo de Firebase
   active: boolean;
   description: string;
   language: CardLanguage;
+  rarity: CardRarity;
 
   // --- CAMPOS NUEVOS PARA IMÁGENES ---
   imageUrl?: string;     // La URL pública para mostrar en la web (<img> src)

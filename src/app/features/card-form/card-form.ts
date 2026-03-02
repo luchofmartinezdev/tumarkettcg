@@ -1,15 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Condition, Franchise, TradeType } from '../../core/models/site-config.model';
+import { CardCondition, CardLanguage, CardRarity, Franchise, TradeType } from '../../core/models/site-config.model';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { CardService } from '../../core/services/cardService';
+import { DropdownComponent } from '../../shared/dropdown/dropdown';
 
 @Component({
   selector: 'app-card-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, DropdownComponent],
   templateUrl: './card-form.html'
 })
 export class CardFormComponent implements OnInit {
@@ -20,26 +21,32 @@ export class CardFormComponent implements OnInit {
   private authService = inject(AuthService);
 
   public isEditMode = false;
+  public isOpen = false;
   isLoading = false;
+
   private editId: string | null = null;
   public TradeType = TradeType;
-  private Condition = Condition;
+  private CardCondition = CardCondition;
   private Franchise = Franchise;
 
   selectedFile: File | null = null;
   imagePreview: string | null = null;
 
-  public conditions = Object.values(Condition);
+  public conditions = Object.values(CardCondition);
   public franchises = Object.values(Franchise);
+  public languages = Object.values(CardLanguage);
+  public rarities = Object.values(CardRarity);
 
   cardForm = this.fb.group({
     userName: [{ value: '', disabled: true }, [Validators.required]],
     cardName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(40)]],
-    franchise: ['Pokémon', [Validators.required]],
+    franchise: [Franchise.POKEMON, [Validators.required]],
     price: [null as number | null, [Validators.required, Validators.min(1), Validators.max(9999999)]],
-    condition: ['Near Mint', [Validators.required]],
+    condition: [CardCondition.MINT, [Validators.required]],
+    language: [CardLanguage.ES, [Validators.required]],
+    rarity: [CardRarity.COMMON, [Validators.required]],
     type: [TradeType.VENDO, [Validators.required]],
-    whatsappContact: ['', [Validators.required, Validators.pattern('^[0-9]{10,15}$')]],
+    whatsappContact: ['', [Validators.required, Validators.pattern('^[0-9]{10,15}$'), Validators.minLength(10), Validators.maxLength(10)]],
     description: ['', [Validators.maxLength(150)]]
   });
 
@@ -116,6 +123,8 @@ export class CardFormComponent implements OnInit {
         franchise: val.franchise,
         price: val.type === TradeType.VENDO ? val.price : null,
         condition: val.condition,
+        language: val.language,
+        rarity: val.rarity,
         type: val.type,
         whatsappContact: val.whatsappContact,
         description: val.description || '',

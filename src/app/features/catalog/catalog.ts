@@ -7,11 +7,12 @@ import { CardPost, SortOption, TradeType } from '../../core/models/site-config.m
 import { SortBarComponent } from '../../shared/sort-bar/sort-bar';
 import { CardGridComponent } from '../../shared/card-grid/card-grid';
 import { CardListComponent } from '../../shared/card-list/card-list';
+import { FilterState, SidebarFiltersComponent } from '../../shared/sidebar-filters/sidebar-filters';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardGridComponent, CardListComponent, SortBarComponent],
+  imports: [CommonModule, RouterModule, CardGridComponent, CardListComponent, SortBarComponent, SidebarFiltersComponent],
   templateUrl: './catalog.html',
 })
 export class CatalogComponent implements OnInit {
@@ -26,6 +27,7 @@ export class CatalogComponent implements OnInit {
   public viewMode = signal<'grid' | 'list'>('grid'); // 👈 nuevo
 
   public TradeType = TradeType;
+  public activeFilters = signal<FilterState | null>(null);
 
   ngOnInit() {
     this.route.data.subscribe(data => {
@@ -53,15 +55,30 @@ export class CatalogComponent implements OnInit {
     const allPosts = this.cardService.allPosts();
     const typeFilter = this.currentType();
     const search = this.searchTerm().toLowerCase().trim();
+    const filters = this.activeFilters();
 
     return allPosts.filter(post => {
+      // 1. Filtro por Tipo
       const matchesType = typeFilter
-        ? post.type.toString().toUpperCase() === typeFilter.toString().toUpperCase()
+        ? post.type?.toString().toUpperCase() === typeFilter.toString().toUpperCase()
         : true;
+
+      // 2. Filtro por Búsqueda
       const matchesSearch = !search ||
-        post.cardName.toLowerCase().includes(search) ||
-        post.franchise.toLowerCase().includes(search);
-      return matchesType && matchesSearch;
+        post.cardName?.toLowerCase().includes(search) ||
+        post.franchise?.toLowerCase().includes(search);
+
+      // 3. Filtros del Sidebar (con protecciones contra undefined)
+      if (!filters) return matchesType && matchesSearch;
+
+      const matchesPrice = (post.price ?? 0) <= filters.maxPrice;
+      const matchesCondition = !filters.condition || post.condition === filters.condition;
+      const matchesLanguage = !filters.language || post.language === filters.language;
+
+      // Usamos ?? '' para evitar el error de undefined en la comparación
+      const matchesRarity = !filters.rarity || (post.rarity ?? '') === filters.rarity;
+
+      return matchesType && matchesSearch && matchesPrice && matchesCondition && matchesLanguage && matchesRarity;
     });
   });
 
@@ -98,5 +115,9 @@ export class CatalogComponent implements OnInit {
       ? `Hola! Vi tu publicación en TuMarketTCG y me interesa comprar la carta: ${cardName}`
       : `Hola! Vi que estás buscando la carta ${cardName} en TuMarketTCG y yo la tengo disponible.`;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+  }
+
+  handleFiltersChange(filters: FilterState) {
+    this.activeFilters.set(filters);
   }
 }
