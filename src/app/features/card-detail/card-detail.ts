@@ -6,6 +6,7 @@ import { CardPost, SellerRating, TradeType } from '../../core/models/site-config
 import { StarRatingComponent } from '../../shared/star-rating/star-rating';
 import { AuthService } from '../../core/services/auth';
 import { RatingService } from '../../core/services/rating';
+import { FavoriteService } from '../../core/services/favorite';
 import { Observable, of } from 'rxjs';
 
 @Component({
@@ -19,25 +20,49 @@ export class CardDetailComponent implements OnInit {
   private cardService = inject(CardService);
   private location = inject(Location);
   private ratingService = inject(RatingService);
+  private favoriteService = inject(FavoriteService);
   public authService = inject(AuthService);
 
   public post = signal<CardPost | undefined>(undefined);
   public sellerRatings$: Observable<SellerRating[]> = of([]);
+  public isFavorite = signal(false);
   public TradeType = TradeType;
 
-  // Método para volver atrás en el historial
-  goBack() {
-    this.location.back();
+  goBack() { this.location.back(); }
+
+  async ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    const foundPost = this.cardService.allPosts().find(p => p.id === id);
+    this.post.set(foundPost);
+
+    if (foundPost?.userId) {
+      this.sellerRatings$ = this.ratingService.getRatings(foundPost.userId);
+    }
+
+    const user = this.authService.currentUser();
+    if (user && foundPost) {
+      this.isFavorite.set(await this.favoriteService.isFavorite(user.uid, foundPost.id));
+    }
   }
 
-  ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      const foundPost = this.cardService.allPosts().find(p => p.id === id);
-      this.post.set(foundPost);
-      if (foundPost?.userId) {
-        this.sellerRatings$ = this.ratingService.getRatings(foundPost.userId);
-      }
+  async toggleFavorite() {
+    const user = this.authService.currentUser();
+    const p = this.post();
+    if (!user || !p) return;
+
+    if (this.isFavorite()) {
+      await this.favoriteService.removeFavoriteByPostId(user.uid, p.id);
+      this.isFavorite.set(false);
+    } else {
+      await this.favoriteService.addFavorite(user.uid, {
+        postId: p.id,
+        cardName: p.cardName,
+        imageUrl: p.imageUrl,
+        franchise: p.franchise,
+      });
+      this.isFavorite.set(true);
     }
   }
 

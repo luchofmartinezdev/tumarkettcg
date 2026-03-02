@@ -99,10 +99,27 @@
             }
           </div>
 
-          <button (click)="handleContact()"
-            class="w-full bg-slate-900 text-white py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-slate-900/30 hover:bg-blue-600 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3">
-            Contactar por WhatsApp
-          </button>
+          <div class="flex gap-3">
+
+            <!-- Botón favorito -->
+            @if (authService.currentUser()) {
+            <button (click)="toggleFavorite()"
+              class="h-14 w-14 rounded-[1.5rem] flex items-center justify-center shadow-md transition-all active:scale-95 flex-shrink-0"
+              [class]="isFavorite() ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-400 hover:bg-red-50 hover:text-red-400'">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+              </svg>
+            </button>
+            }
+
+            <!-- Botón contactar -->
+            <button (click)="handleContact()"
+              class="flex-grow bg-slate-900 text-white py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-slate-900/30 hover:bg-blue-600 hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3">
+              Contactar por WhatsApp
+            </button>
+
+          </div>
         </div>
       </div>
     </div>

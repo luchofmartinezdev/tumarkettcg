@@ -29,4 +29,5 @@ export class ProfileFavoritesComponent implements OnInit {
     const user = this.authService.currentUser();
     if (user) this.favoriteService.removeFavorite(user.uid, favoriteId);
   }
+ 
 }

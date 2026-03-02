@@ -16,6 +16,12 @@ export enum Condition {
   POOR = 'Dañada'
 }
 
+export enum CardLanguage {
+  ES = 'Español',
+  EN = 'Inglés',
+  JP = 'Japonés'
+}
+
 export enum Franchise {
   POKEMON = 'Pokémon',
   MAGIC = 'Magic',
@@ -58,6 +64,7 @@ export interface CardPost {
   createdAt: Date;       // O Timestamp si usás el formato nativo de Firebase
   active: boolean;
   description: string;
+  language: CardLanguage;
 
   // --- CAMPOS NUEVOS PARA IMÁGENES ---
   imageUrl?: string;     // La URL pública para mostrar en la web (<img> src)
