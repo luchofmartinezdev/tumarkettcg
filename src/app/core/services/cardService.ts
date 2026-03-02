@@ -15,6 +15,8 @@ import { map, Observable } from 'rxjs';
 import { CardPost } from '../models/site-config.model';
 import { AuthService } from './auth';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
+import { generateSlug } from '../../shared/utils/slug';
+import { UserProfileService } from './user-profile';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +25,7 @@ export class CardService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
   private storage = inject(Storage);
+  private userProfileService = inject(UserProfileService);
 
   // Referencia a la colección 'posts' en tu base de datos
   private postsCollection = collection(this.firestore, 'posts');
@@ -63,27 +66,27 @@ export class CardService {
   }
 
   async createPost(postData: Partial<CardPost>) {
-    // 1. Obtenemos el usuario logueado en este momento
     const currentUser = this.authService.currentUser();
+    if (!currentUser) throw new Error('Debes iniciar sesión para publicar una carta.');
+    const userProfile = await this.userProfileService.getProfile(currentUser.uid);
 
-    // 2. Validación de seguridad (por si alguien llega acá sin loguearse)
-    if (!currentUser) {
-      throw new Error('Debes iniciar sesión para publicar una carta.');
-    }
-
-    // 3. Armamos el objeto final, inyectando los datos que faltan
     const newPost = {
       ...postData,
-      userId: currentUser.uid,          // Atamos la carta al ID de Google
-      userName: currentUser.displayName || 'Usuario Anónimo', // Guardamos el nombre
-      createdAt: new Date(),            // Fecha de publicación
-      active: true                      // Por defecto, nace activa
+      userId: currentUser.uid,
+      userName: currentUser.displayName || 'Usuario Anónimo',
+      userSlug: userProfile?.slug || null,
+      createdAt: new Date(),
+      active: true
     };
 
-    // 4. Guardamos en Firebase usando addDoc (crea un ID aleatorio)
     try {
       const docRef = await addDoc(this.postsCollection, newPost);
-      return docRef.id; // Devolvemos el ID de Firestore por si lo necesitás
+
+      // Generamos el slug con el ID real de Firestore
+      const slug = generateSlug(postData.cardName || '', docRef.id);
+      await updateDoc(docRef, { slug });
+
+      return docRef.id;
     } catch (error) {
       console.error('Error al guardar en Firebase:', error);
       throw error;

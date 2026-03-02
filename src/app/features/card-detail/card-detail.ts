@@ -7,6 +7,7 @@ import { StarRatingComponent } from '../../shared/star-rating/star-rating';
 import { AuthService } from '../../core/services/auth';
 import { RatingService } from '../../core/services/rating';
 import { FavoriteService } from '../../core/services/favorite';
+import { extractShortId } from '../../shared/utils/slug';
 import { Observable, of } from 'rxjs';
 
 @Component({
@@ -31,10 +32,16 @@ export class CardDetailComponent implements OnInit {
   goBack() { this.location.back(); }
 
   async ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) return;
+    const slug = this.route.snapshot.paramMap.get('slug');
+    if (!slug) return;
 
-    const foundPost = this.cardService.allPosts().find(p => p.id === id);
+    const shortId = extractShortId(slug);
+
+    // Buscamos el post cuyo ID empiece con el shortId
+    const foundPost = this.cardService.allPosts().find(p =>
+      p.id.startsWith(shortId) || p.slug === slug
+    );
+
     this.post.set(foundPost);
 
     if (foundPost?.userId) {

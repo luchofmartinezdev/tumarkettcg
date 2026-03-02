@@ -12,7 +12,7 @@ export const routes: Routes = [
         loadComponent: () => import('./features/auth/login/login').then(m => m.LoginComponent)
     },
     {
-        path: 'card/:id',
+        path: 'card/:slug',
         loadComponent: () => import('./features/card-detail/card-detail').then(m => m.CardDetailComponent)
     },
     {
@@ -35,7 +35,7 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
-        path: 'editar/:id',
+        path: 'editar/:slug',
         loadComponent: () => import('./features/card-form/card-form').then(m => m.CardFormComponent),
         canActivate: [authGuard]
     },
@@ -69,7 +69,7 @@ export const routes: Routes = [
         data: { tab: 'favoritos' }
     },
     {
-        path: 'vendedor/:uid',
+        path: 'vendedor/:slug',
         loadComponent: () => import('./features/seller-profile/seller-profile').then(m => m.SellerProfileComponent)
     },
     { path: '**', redirectTo: '' }
