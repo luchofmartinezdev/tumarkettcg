@@ -47,7 +47,8 @@ export class CardFormComponent implements OnInit {
     rarity: [CardRarity.COMMON, [Validators.required]],
     type: [TradeType.VENDO, [Validators.required]],
     whatsappContact: ['', [Validators.required, Validators.pattern('^[0-9]{10,15}$'), Validators.minLength(10), Validators.maxLength(10)]],
-    description: ['', [Validators.maxLength(150)]]
+    description: ['', [Validators.maxLength(150)]],
+
   });
 
   ngOnInit() {
@@ -95,7 +96,6 @@ export class CardFormComponent implements OnInit {
   }
 
   private prepareEditMode(id: string) {
-    // Buscamos en el signal allPosts() que ahora viene de Firebase
     const postToEdit = this.cardService.allPosts().find(p => p.id === id);
 
     if (postToEdit) {
@@ -104,6 +104,12 @@ export class CardFormComponent implements OnInit {
       if (postToEdit.type === TradeType.BUSCO) {
         this.cardForm.get('price')?.disable();
       }
+
+      // 👇 Cargar la imagen existente en la preview
+      if (postToEdit.imageUrl) {
+        this.imagePreview = postToEdit.imageUrl;
+      }
+
     } else {
       this.router.navigate(['/publicar']);
     }
@@ -139,6 +145,11 @@ export class CardFormComponent implements OnInit {
           const imageData = await this.cardService.uploadImage(this.selectedFile);
           postData.imageUrl = imageData.url;
           postData.imagePath = imageData.path;
+        } else if (this.isEditMode) {
+          // Modo edición sin imagen nueva → preservar la existente
+          const existing = this.cardService.allPosts().find(p => p.id === this.editId);
+          if (existing?.imageUrl) postData.imageUrl = existing.imageUrl;
+          if (existing?.imagePath) postData.imagePath = existing.imagePath;
         }
 
         // 3. Guardado en Firestore

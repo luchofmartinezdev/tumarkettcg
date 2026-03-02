@@ -14,7 +14,7 @@ import {
 import { map, Observable } from 'rxjs';
 import { CardPost } from '../models/site-config.model';
 import { AuthService } from './auth';
-import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +51,7 @@ export class CardService {
       map(posts => posts.map(post => ({
         ...post,
         // Convertimos el Timestamp de Firebase a un Date de JS real
-        createdAt: (post['createdAt'] as any)?.toDate()   || new Date() 
+        createdAt: (post['createdAt'] as any)?.toDate() || new Date()
       } as CardPost)))
     ).subscribe({
       next: (data) => {
@@ -99,7 +99,19 @@ export class CardService {
     return updateDoc(docRef, data);
   }
 
-  async deletePost(id: string) {
+  async deletePost(id: string, imagePath?: string) {
+    // 1. Eliminamos la imagen de Storage si existe
+    if (imagePath) {
+      try {
+        const imageRef = ref(this.storage, imagePath);
+        await deleteObject(imageRef);
+      } catch (error) {
+        // Si la imagen no existe en Storage no rompemos el flujo
+        console.warn('No se pudo eliminar la imagen de Storage:', error);
+      }
+    }
+
+    // 2. Eliminamos el documento de Firestore
     const docRef = doc(this.firestore, `posts/${id}`);
     return deleteDoc(docRef);
   }
@@ -146,5 +158,15 @@ export class CardService {
       console.error('Error al subir imagen a Storage:', error);
       throw error;
     }
+  }
+
+  async markAsSold(id: string, buyerName?: string): Promise<void> {
+    const docRef = doc(this.firestore, `posts/${id}`);
+    await updateDoc(docRef, {
+      isSold: true,
+      active: false,
+      buyerName: buyerName || null,
+      soldAt: new Date()
+    });
   }
 }

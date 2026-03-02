@@ -1,4 +1,4 @@
-import { Component, output, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardLanguage, CardCondition, CardRarity, TradeType } from '../../core/models/site-config.model';
 
@@ -17,19 +17,18 @@ export interface FilterState {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SidebarFiltersComponent {
-  // Enums convertidos a Arrays para el @for
   readonly languages = Object.values(CardLanguage);
   readonly conditions = Object.values(CardCondition);
   readonly rarities = Object.values(CardRarity);
 
+  // 👇 nuevo input
+  showPriceFilter = input<boolean>(true);
 
-  // Estados locales (Signals)
   maxPrice = signal<number>(150000);
   selectedCondition = signal<CardCondition | null>(null);
   selectedLanguage = signal<CardLanguage | null>(null);
   selectedRarity = signal<CardRarity | null>(null);
 
-  // Output para el CatalogComponent
   filtersChanged = output<FilterState>();
 
   updatePrice(ev: Event) {

@@ -71,6 +71,9 @@ export interface CardPost {
   whatsappContact: string;
   createdAt: Date;       // O Timestamp si usás el formato nativo de Firebase
   active: boolean;
+  isSold?: boolean;
+  buyerName?: string;
+  soldAt?: Date;
   description: string;
   language: CardLanguage;
   rarity: CardRarity;
