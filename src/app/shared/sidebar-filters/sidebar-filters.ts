@@ -1,6 +1,6 @@
 import { Component, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CardLanguage, CardCondition, CardRarity } from '../../core/models/site-config.model';
+import { CardLanguage, CardCondition, CardRarity, TradeType } from '../../core/models/site-config.model';
 
 export interface FilterState {
   maxPrice: number;
@@ -21,6 +21,7 @@ export class SidebarFiltersComponent {
   readonly languages = Object.values(CardLanguage);
   readonly conditions = Object.values(CardCondition);
   readonly rarities = Object.values(CardRarity);
+
 
   // Estados locales (Signals)
   maxPrice = signal<number>(150000);
