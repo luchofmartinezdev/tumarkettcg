@@ -9,6 +9,7 @@ import { StarRatingComponent } from '../../shared/star-rating/star-rating';
 import { CardComponent } from '../../shared/card/card';
 import { Observable, of } from 'rxjs';
 import { UserProfileService } from '../../core/services/user-profile';
+import { extractShortId } from '../../shared/utils/slug';
 import { UserProfile } from '../../core/models/site-config.model';
 
 @Component({
@@ -21,7 +22,7 @@ export class SellerProfileComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private cardService = inject(CardService);
   public authService = inject(AuthService);
-  private ratingService = inject(RatingService);private userProfileService = inject(UserProfileService);
+  private ratingService = inject(RatingService); private userProfileService = inject(UserProfileService);
 
   public sellerId = signal<string>('');
   public sellerName = signal<string>('');
@@ -46,21 +47,28 @@ export class SellerProfileComponent implements OnInit {
   );
 
   async ngOnInit() {
-    const uid = this.route.snapshot.paramMap.get('uid');
+    const slug = this.route.snapshot.paramMap.get('slug');
+    if (!slug) return;
+
+    const shortId = extractShortId(slug);
+
+    // Buscamos el uid desde los posts del vendedor
+    const post = this.cardService.allPosts().find(p =>
+      p.userId.startsWith(shortId) ||
+      (p.userSlug && p.userSlug === slug)
+    );
+
+    // Alternativa: buscar en Firestore por slug
+    const profile = await this.userProfileService.getProfileBySlug(slug);
+    const uid = profile?.uid || post?.userId;
+
     if (!uid) return;
 
     this.sellerId.set(uid);
-    const profile = await this.userProfileService.getProfile(uid);
+    this.sellerName.set(profile?.displayName || post?.userName || '');
     this.userProfile.set(profile);
-
-    // Obtenemos nombre del vendedor desde sus posts
-    const post = this.cardService.allPosts().find(p => p.userId === uid);
-    if (post) this.sellerName.set(post.userName);
-
-    // Cargamos ratings
     this.ratings$ = this.ratingService.getRatings(uid);
 
-    // Verificamos si el usuario logueado puede calificar
     const currentUser = this.authService.currentUser();
     if (currentUser && currentUser.uid !== uid) {
       const [contacted, rated] = await Promise.all([

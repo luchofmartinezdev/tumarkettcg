@@ -43,6 +43,7 @@ export interface SellerRating {
 
 export interface UserProfile {
   uid: string;
+  slug?: string;
   displayName: string;
   photoURL?: string;
   location?: string;        // ciudad/provincia opcional
@@ -63,6 +64,8 @@ export interface CardPost {
   id: string;            // El ID del documento en Firestore
   userId: string;        // <--- EL CAMPO CLAVE (El uid de Firebase Auth)
   userName: string;      // El nombre para mostrar en la UI (ej: Lucho)
+  slug?: string;
+  userSlug?: string;
   cardName: string;
   franchise: Franchise;
   price?: number;
