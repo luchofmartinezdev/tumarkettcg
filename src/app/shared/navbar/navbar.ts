@@ -1,25 +1,30 @@
-import { Component, computed, inject, signal, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { CardService } from '../../core/services/cardService';
 import { TradeType } from '../../core/models/site-config.model';
+import { ThemeService } from '../../core/services/theme';
+
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './navbar.html'
+  imports: [RouterModule, CommonModule],
+  templateUrl: './navbar.html',
+  host: {
+    '(document:click)': 'onDocumentClick($event)'
+  }
 })
 export class Navbar {
 
   public authService = inject(AuthService);
   private cardService = inject(CardService);
   private router = inject(Router);
+  public themeService = inject(ThemeService);
 
   public searchTerm = signal('');
   public showResults = signal(false);
-  public showUserMenu = signal(false); // 👈 nuevo
+  public showUserMenu = signal(false);
 
   public TradeType = TradeType;
 
@@ -33,8 +38,6 @@ export class Navbar {
       );
   });
 
-  // Cierra el dropdown al hacer click fuera del navbar
-  @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (!target.closest('#user-menu-wrapper')) {

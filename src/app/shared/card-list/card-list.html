@@ -1,102 +1,170 @@
 <div class="flex flex-col gap-4">
   @for (post of posts(); track post.id) {
-  <div [routerLink]="['/card', post.id]"
-    class="group flex items-center gap-5 bg-white rounded-3xl p-4 border border-slate-100 shadow-md shadow-slate-200/40 hover:shadow-blue-900/10 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer animate-in fade-in slide-in-from-bottom-4 duration-500"
-    [style.animation-delay.ms]="$index * 50">
-
-    <!-- Imagen -->
     <div
-      class="w-16 h-24 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 flex-shrink-0 flex items-center justify-center">
-      @if (post.imageUrl) {
-      <img [src]="post.imageUrl" [alt]="post.cardName" class="w-full h-full object-contain p-1">
-      } @else {
-      <svg class="w-7 h-7 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-      }
-    </div>
-
-    <!-- Info -->
-    <div class="flex-grow min-w-0">
-      <div class="flex items-center gap-2 mb-1">
-        <span [class]="post.type === TradeType.VENDO ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'"
-          class="px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest">
-          {{ post.type === TradeType.VENDO ? 'Venta' : 'Búsqueda' }}
-        </span>
-        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-tight">
-          {{ post.franchise }} · {{ post.condition }}
-        </span>
-      </div>
-
-      <h3 [class]="post.type === TradeType.VENDO ? 'group-hover:text-blue-600' : 'group-hover:text-emerald-600'"
-        class="text-sm font-black text-slate-900 uppercase tracking-tighter leading-tight truncate transition-colors">
-        {{ post.cardName }}
-      </h3>
-
-      <div class="mt-1.5">
-        @if (post.type === TradeType.VENDO) {
-        <span class="text-base font-black text-slate-900 tracking-tighter">
-          {{ post.price | currency:'ARS':'symbol':'1.0-0' }}
-        </span>
+      [routerLink]="['/card', post.id]"
+      class="group flex items-center gap-5 bg-white dark:bg-slate-800 rounded-3xl p-4 border border-slate-100 dark:border-slate-700 shadow-md shadow-slate-200/40 dark:shadow-black/20 hover:shadow-blue-900/10 dark:hover:shadow-blue-900/40 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer animate-in fade-in slide-in-from-bottom-4 duration-500"
+      [style.animation-delay.ms]="$index * 50"
+    >
+      <!-- Imagen -->
+      <div
+        class="w-16 h-24 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 flex-shrink-0 flex items-center justify-center transition-colors"
+      >
+        @if (post.imageUrl) {
+          <img
+            [src]="post.imageUrl"
+            [alt]="post.cardName"
+            class="w-full h-full object-contain p-1"
+          />
         } @else {
-        <span class="text-[10px] font-black text-emerald-600 uppercase tracking-tighter">A convenir</span>
+          <svg
+            class="w-7 h-7 text-slate-200 dark:text-slate-700"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
         }
       </div>
 
-      <div class="mt-2 flex items-center gap-1.5 opacity-50">
-        <div class="h-4 w-4 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden">
-          <svg class="w-2.5 h-2.5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
-          </svg>
+      <!-- Info -->
+      <div class="flex-grow min-w-0">
+        <div class="flex items-center gap-2 mb-1">
+          <span
+            [class]="
+              post.type === TradeType.VENDO
+                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400'
+            "
+            class="px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest transition-colors"
+          >
+            {{ post.type === TradeType.VENDO ? 'Venta' : 'Búsqueda' }}
+          </span>
+          <span
+            class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight transition-colors"
+          >
+            {{ post.franchise }} · {{ post.condition }}
+          </span>
         </div>
-        <span class="text-[8px] font-bold text-slate-500 tracking-tight uppercase line-clamp-1">{{ post.userName
-          }}</span>
+
+        <h3
+          [class]="
+            post.type === TradeType.VENDO
+              ? 'group-hover:text-blue-600 dark:group-hover:text-blue-400'
+              : 'group-hover:text-emerald-600 dark:group-hover:text-emerald-400'
+          "
+          class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tighter leading-tight truncate transition-colors"
+        >
+          {{ post.cardName }}
+        </h3>
+
+        <div class="mt-1.5">
+          @if (post.type === TradeType.VENDO) {
+            <span
+              class="text-base font-black text-slate-900 dark:text-white tracking-tighter transition-colors"
+            >
+              {{ post.price | currency: 'ARS' : 'symbol' : '1.0-0' }}
+            </span>
+          } @else {
+            <span
+              class="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-tighter transition-colors"
+              >A convenir</span
+            >
+          }
+        </div>
+
+        <div class="mt-2 flex items-center gap-1.5 opacity-50">
+          <div
+            class="h-4 w-4 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center overflow-hidden transition-colors"
+          >
+            <svg
+              class="w-2.5 h-2.5 text-slate-400 dark:text-slate-500"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+            </svg>
+          </div>
+          <span
+            class="text-[8px] font-bold text-slate-500 dark:text-slate-400 tracking-tight uppercase line-clamp-1 transition-colors"
+            >{{ post.userName }}</span
+          >
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <!-- Favorito -->
+        @if (authService.currentUser()) {
+          <button
+            (click)="toggleFavorite($event, post)"
+            class="h-9 w-9 rounded-xl flex items-center justify-center shadow-sm transition-all active:scale-90"
+            [class]="
+              isFavorite(post.id)
+                ? 'bg-red-500 text-white'
+                : 'bg-slate-100 dark:bg-slate-700 text-slate-300 dark:text-slate-600 hover:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20'
+            "
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+              />
+            </svg>
+          </button>
+        }
+
+        <!-- Contacto -->
+        <button
+          (click)="handleContact(post); $event.stopPropagation()"
+          [class]="
+            post.type === TradeType.VENDO
+              ? 'hover:bg-blue-600 dark:hover:bg-blue-500'
+              : 'hover:bg-emerald-500 dark:hover:bg-emerald-400'
+          "
+          class="h-9 w-9 bg-slate-900 dark:bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-md dark:shadow-blue-900/20 transition-all active:scale-90"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.5"
+              d="M17 8l4 4m0 0l-4 4m4-4H3"
+            />
+          </svg>
+        </button>
       </div>
     </div>
-
-    <!-- Acciones -->
-    <div class="flex items-center gap-2 flex-shrink-0">
-
-      <!-- Favorito -->
-      @if (authService.currentUser()) {
-      <button (click)="toggleFavorite($event, post)"
-        class="h-9 w-9 rounded-xl flex items-center justify-center shadow-sm transition-all active:scale-90"
-        [class]="isFavorite(post.id) ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-300 hover:text-red-400 hover:bg-red-50'">
-        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
-        </svg>
-      </button>
-      }
-
-      <!-- Contacto -->
-      <button (click)="handleContact(post); $event.stopPropagation()"
-        [class]="post.type === TradeType.VENDO ? 'hover:bg-blue-600' : 'hover:bg-emerald-500'"
-        class="h-9 w-9 bg-slate-900 rounded-xl flex items-center justify-center text-white shadow-md transition-all active:scale-90">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
-      </button>
-
-    </div>
-
-  </div>
-
   } @empty {
-  <div
-    class="flex flex-col items-center justify-center py-24 px-4 bg-slate-50/50 rounded-[3rem] border-2 border-dashed border-slate-100 animate-in fade-in duration-700">
     <div
-      class="h-20 w-20 bg-white rounded-[2rem] flex items-center justify-center shadow-xl shadow-slate-200/50 mb-6 text-slate-300">
-      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-      </svg>
+      class="flex flex-col items-center justify-center py-24 px-4 bg-slate-50/50 dark:bg-slate-800/50 rounded-[3rem] border-2 border-dashed border-slate-100 dark:border-slate-700 animate-in fade-in duration-700 transition-colors"
+    >
+      <div
+        class="h-20 w-20 bg-white dark:bg-slate-800 rounded-[2rem] flex items-center justify-center shadow-xl shadow-slate-200/50 dark:shadow-black/40 mb-6 text-slate-300 dark:text-slate-600 transition-colors"
+      >
+        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+          />
+        </svg>
+      </div>
+      <h3
+        class="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter transition-colors"
+      >
+        No hay publicaciones aún
+      </h3>
+      <p
+        class="text-slate-400 dark:text-slate-500 text-sm font-medium mt-2 max-w-[250px] mx-auto leading-relaxed text-center transition-colors"
+      >
+        Parece que todavía nadie publicó nada por acá. ¡Sé el primero en ofrecer una carta!
+      </p>
     </div>
-    <h3 class="text-xl font-black text-slate-900 uppercase tracking-tighter">No hay publicaciones aún</h3>
-    <p class="text-slate-400 text-sm font-medium mt-2 max-w-[250px] mx-auto leading-relaxed text-center">
-      Parece que todavía nadie publicó nada por acá. ¡Sé el primero en ofrecer una carta!
-    </p>
-  </div>
   }
 </div>

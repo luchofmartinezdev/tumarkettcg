@@ -1,10 +1,12 @@
-<div class="min-h-screen bg-[#f8fafc] pt-28 pb-20 px-4">
+<div
+  class="min-h-screen bg-[#f8fafc] dark:bg-slate-900 pt-28 pb-20 px-4 transition-colors duration-300"
+>
   <div class="max-w-7xl mx-auto">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
       <div class="animate-in fade-in slide-in-from-left duration-700">
         <button
           routerLink="/"
-          class="flex items-center gap-2 text-slate-400 hover:text-blue-600 font-bold text-[10px] uppercase tracking-widest transition-all mb-4 group"
+          class="flex items-center gap-2 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 font-bold text-[10px] uppercase tracking-widest transition-all mb-4 group"
         >
           <svg
             class="w-4 h-4 group-hover:-translate-x-1 transition-transform"
@@ -23,7 +25,7 @@
         </button>
 
         <h1
-          class="text-4xl md:text-6xl font-black text-slate-900 uppercase tracking-tighter leading-none"
+          class="text-4xl md:text-6xl font-black text-slate-900 dark:text-white uppercase tracking-tighter leading-none"
         >
           @if (currentType() === TradeType.VENDO) {
             Cartas en <span class="text-blue-600">Venta</span>
@@ -32,7 +34,7 @@
           }
         </h1>
 
-        <p class="text-slate-500 mt-4 font-medium italic">
+        <p class="text-slate-500 dark:text-slate-400 mt-4 font-medium italic">
           @if (currentType() === TradeType.VENDO) {
             Cartas publicadas para la venta en Córdoba.
           } @else {
@@ -42,7 +44,7 @@
       </div>
 
       <div class="relative w-full lg:max-w-md">
-        <div class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400">
+        <div class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
@@ -57,7 +59,7 @@
           (input)="updateSearch($event)"
           [value]="searchTerm()"
           placeholder="Filtrar por nombre..."
-          class="w-full bg-white border border-slate-200 rounded-2xl pl-14 pr-6 py-4 text-sm shadow-xl shadow-slate-200/40 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all font-medium"
+          class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl pl-14 pr-6 py-4 text-sm dark:text-slate-200 shadow-xl shadow-slate-200/40 dark:shadow-black/20 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 outline-none transition-all font-medium placeholder:text-slate-400 dark:placeholder:text-slate-600"
         />
       </div>
     </div>
@@ -76,21 +78,21 @@
           <div class="flex items-center gap-6">
             <app-sort-bar (onSortChange)="handleSort($event)"></app-sort-bar>
             <span
-              class="hidden sm:block text-[10px] font-black text-slate-300 uppercase tracking-widest"
+              class="hidden sm:block text-[10px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest"
             >
               {{ orderedPosts().length }} Resultados encontrados
             </span>
           </div>
 
           <div
-            class="flex items-center gap-1 bg-white border border-slate-200 rounded-2xl p-1 shadow-sm"
+            class="flex items-center gap-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-1 shadow-sm"
           >
             <button
               (click)="setViewMode('grid')"
               [class]="
                 viewMode() === 'grid'
-                  ? 'bg-slate-900 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-600'
+                  ? 'bg-slate-900 dark:bg-blue-600 text-white shadow-md'
+                  : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
               "
               class="w-9 h-9 rounded-xl flex items-center justify-center transition-all"
             >
@@ -107,8 +109,8 @@
               (click)="setViewMode('list')"
               [class]="
                 viewMode() === 'list'
-                  ? 'bg-slate-900 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-600'
+                  ? 'bg-slate-900 dark:bg-blue-600 text-white shadow-md'
+                  : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
               "
               class="w-9 h-9 rounded-xl flex items-center justify-center transition-all"
             >
@@ -141,13 +143,13 @@
             }
           } @else {
             <div
-              class="flex flex-col items-center justify-center py-24 bg-white rounded-[3rem] border border-slate-100 shadow-sm text-center"
+              class="flex flex-col items-center justify-center py-24 bg-white dark:bg-slate-800 rounded-[3rem] border border-slate-100 dark:border-slate-700 shadow-sm text-center"
             >
               <div
-                class="w-16 h-16 bg-slate-50 rounded-[1.5rem] flex items-center justify-center mb-6"
+                class="w-16 h-16 bg-slate-50 dark:bg-slate-700 rounded-[1.5rem] flex items-center justify-center mb-6"
               >
                 <svg
-                  class="w-6 h-6 text-slate-300"
+                  class="w-6 h-6 text-slate-300 dark:text-slate-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -160,10 +162,14 @@
                   />
                 </svg>
               </div>
-              <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">
+              <h3
+                class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest"
+              >
                 Sin coincidencias
               </h3>
-              <p class="text-slate-400 text-xs mt-2">Intenta cambiar los filtros seleccionados.</p>
+              <p class="text-slate-400 dark:text-slate-500 text-xs mt-2">
+                Intenta cambiar los filtros seleccionados.
+              </p>
             </div>
           }
         </section>

@@ -1,18 +1,28 @@
 <aside class="w-full space-y-6 animate-in fade-in slide-in-from-left duration-500">
   <div class="flex items-center justify-between px-2">
-    <h3 class="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em]">Filtros</h3>
+    <h3 class="text-[11px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em]">
+      Filtros
+    </h3>
     <button
       (click)="resetFilters()"
-      class="text-[10px] font-bold text-blue-600 uppercase hover:underline"
+      class="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase hover:underline"
     >
       Limpiar
     </button>
   </div>
   @if (showPriceFilter()) {
-    <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
+    <div
+      class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm"
+    >
       <div class="flex justify-between items-center mb-6">
-        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Presupuesto</h4>
-        <span class="text-xs font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+        <h4
+          class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest"
+        >
+          Presupuesto
+        </h4>
+        <span
+          class="text-xs font-black text-blue-600 bg-blue-50 dark:bg-blue-900/40 dark:text-blue-400 px-3 py-1 rounded-full"
+        >
           ${{ maxPrice() | number }}
         </span>
       </div>
@@ -23,20 +33,26 @@
         [step]="1000"
         [value]="maxPrice()"
         (input)="updatePrice($event)"
-        class="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600 transition-all"
+        class="w-full h-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600 transition-all"
       />
     </div>
   }
-  <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
-    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Estado</h4>
+  <div
+    class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm"
+  >
+    <h4
+      class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4"
+    >
+      Estado
+    </h4>
     <div class="flex flex-wrap gap-2">
       @for (c of conditions; track c) {
         <button
           (click)="toggleCondition(c)"
           [class]="
             selectedCondition() === c
-              ? 'bg-slate-900 text-white border-slate-900 shadow-lg'
-              : 'bg-slate-50 text-slate-500 border-slate-50 hover:border-slate-200'
+              ? 'bg-slate-900 dark:bg-blue-600 text-white border-slate-900 dark:border-blue-600 shadow-lg'
+              : 'bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-50 dark:border-slate-600 hover:border-slate-200 dark:hover:border-slate-500'
           "
           class="px-4 py-2 border rounded-2xl text-[9px] font-black uppercase transition-all"
         >
@@ -46,17 +62,23 @@
     </div>
   </div>
 
-  <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-8">
+  <div
+    class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm space-y-8"
+  >
     <div>
-      <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Idioma</h4>
+      <h4
+        class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4"
+      >
+        Idioma
+      </h4>
       <div class="flex flex-wrap gap-2">
         @for (lang of languages; track lang) {
           <button
             (click)="toggleLanguage(lang)"
             [class]="
               selectedLanguage() === lang
-                ? 'bg-slate-900 text-white border-slate-900 shadow-lg'
-                : 'bg-slate-50 text-slate-500 border-slate-50 hover:border-slate-200'
+                ? 'bg-slate-900 dark:bg-blue-600 text-white border-slate-900 dark:border-blue-600 shadow-lg'
+                : 'bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-slate-50 dark:border-slate-600 hover:border-slate-200 dark:hover:border-slate-500'
             "
             class="px-4 py-2 border rounded-2xl text-[9px] font-black uppercase transition-all"
           >
@@ -67,9 +89,15 @@
     </div>
   </div>
 
-  <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-8">
+  <div
+    class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm space-y-8"
+  >
     <div>
-      <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Rareza</h4>
+      <h4
+        class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4"
+      >
+        Rareza
+      </h4>
       <div class="flex flex-wrap gap-2">
         @for (r of rarities; track r) {
           <button
@@ -77,9 +105,9 @@
             [class]="
               selectedRarity() === r
                 ? 'bg-blue-600 text-white shadow-md'
-                : 'bg-white text-slate-500 border-slate-100'
+                : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-700'
             "
-            class="px-3 py-1.5 border rounded-xl text-[9px] font-bold uppercase transition-all"
+            class="px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase transition-all"
           >
             {{ r }}
           </button>

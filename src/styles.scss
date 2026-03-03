@@ -21,25 +21,42 @@ app-cart-drawer {
 
 html {
   scroll-behavior: smooth;
+  background-color: #f8fafc;
+  transition: background-color 0.3s ease;
+}
+
+html.dark {
   background-color: #0a0a0a;
 }
 
-/* Scrollbar minimalista para que no rompa el diseño oscuro */
+/* Scrollbar minimalista */
 ::-webkit-scrollbar {
   width: 6px;
 }
 
 ::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+.dark ::-webkit-scrollbar-track {
   background: #0a0a0a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #222;
+  background: #cbd5e1;
   border-radius: 10px;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #facc15;
+  background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -53,4 +70,8 @@ html {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #e2e8f0;
   border-radius: 10px;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1e293b;
 }
