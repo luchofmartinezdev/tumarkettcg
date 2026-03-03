@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardCondition, CardLanguage, CardRarity, Franchise, TradeType } from '../../core/models/site-config.model';
+import { CardCondition, CardLanguage, Franchise, TradeType, RARITIES_BY_FRANCHISE, RarityOption } from '../../core/models/site-config.model';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { CardService } from '../../core/services/cardService';
@@ -39,20 +39,25 @@ export class CardFormComponent implements OnInit {
   public conditions = Object.values(CardCondition);
   public franchises = Object.values(Franchise);
   public languages = Object.values(CardLanguage);
-  public rarities = Object.values(CardRarity);
+  availableRarities: RarityOption[] = [];
+  rarities: string[] = [];
 
   cardForm = this.fb.group({
     userName: [{ value: '', disabled: true }, [Validators.required]],
     cardName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(40)]],
-    franchise: [Franchise.POKEMON, [Validators.required]],
+    franchise: ['', [Validators.required]],
     price: [null as number | null, [Validators.required, Validators.min(1), Validators.max(9999999)]],
-    condition: [CardCondition.MINT, [Validators.required]],
-    language: [CardLanguage.ES, [Validators.required]],
-    rarity: [CardRarity.COMMON, [Validators.required]],
+    condition: ['', [Validators.required]],
+    language: ['', [Validators.required]],
+    rarity: ['', [Validators.required]],
     type: [TradeType.VENDO, [Validators.required]],
-    whatsappContact: ['', [Validators.required, Validators.pattern('^[0-9]{10,15}$'), Validators.minLength(10), Validators.maxLength(10)]],
+    whatsappContact: ['', [
+      Validators.required,
+      Validators.pattern('^[0-9]+$'),
+      Validators.minLength(10),
+      Validators.maxLength(15)
+    ]],
     description: ['', [Validators.maxLength(150)]],
-
   });
 
   ngOnInit() {
@@ -61,12 +66,41 @@ export class CardFormComponent implements OnInit {
       this.cardForm.patchValue({ userName: user.displayName });
     }
 
+    // 1. Escuchar cambios en la franquicia para actualizar rarezas
+    this.setupFranchiseListener();
+
+    // 2. Tu listener existente para Vendo/Busco
     this.setupTypeListener();
 
+    // 3. Cargar datos si es edición
     const slug = this.route.snapshot.paramMap.get('slug');
     if (slug) {
       this.prepareEditMode(slug);
     }
+  }
+
+  // Nuevo método para manejar el cambio de Franquicia
+  private setupFranchiseListener() {
+    this.cardForm.get('franchise')?.valueChanges.subscribe((selectedFranchise) => {
+      // Usamos una guardia para asegurar que selectedFranchise sea del tipo Franchise
+      const franchise = selectedFranchise as Franchise;
+
+      if (franchise && RARITIES_BY_FRANCHISE[franchise]) {
+        // 1. Actualizamos la lista de opciones
+        this.rarities = RARITIES_BY_FRANCHISE[franchise].map(r => r.label);
+
+        // 2. Verificamos la rareza actual con un fallback de string vacío
+        // Usamos || '' para asegurar que currentRarity sea un string y no null/undefined
+        const currentRarity = this.cardForm.get('rarity')?.value || '';
+
+        if (!this.rarities.includes(currentRarity)) {
+          this.cardForm.get('rarity')?.setValue('');
+        }
+      } else {
+        this.rarities = [];
+        this.cardForm.get('rarity')?.setValue('');
+      }
+    });
   }
 
   onFileSelected(event: any) {
@@ -81,6 +115,15 @@ export class CardFormComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  // Cuando el usuario cambia la franquicia en el HTML
+  onFranchiseChange(event: any) {
+    const selectedFranchise = event.target.value as Franchise;
+    this.availableRarities = RARITIES_BY_FRANCHISE[selectedFranchise] || [];
+
+    // Limpiamos el valor de rareza previo para que el usuario elija uno válido para el nuevo juego
+    this.cardForm.get('rarity')?.setValue('');
   }
 
   private setupTypeListener() {
@@ -134,6 +177,13 @@ export class CardFormComponent implements OnInit {
   }
 
   async onSubmit() {
+
+    if (this.cardForm.invalid) {
+      // Esto hace que todos los mensajes de error aparezcan de golpe
+      this.cardForm.markAllAsTouched();
+      return;
+    }
+
     const user = this.authService.currentUser();
 
     // Agregamos isLoading para evitar doble clic
