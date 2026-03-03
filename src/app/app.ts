@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { Router, RouterModule, RouterOutlet, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { Footer } from "./shared/footer/footer";
 import { Navbar } from "./shared/navbar/navbar";
 
@@ -12,4 +12,19 @@ import { Navbar } from "./shared/navbar/navbar";
 })
 export class App {
   public router = inject(Router);
+  public isLoading = signal(false);
+
+  constructor() {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.isLoading.set(true);
+      } else if (
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError
+      ) {
+        this.isLoading.set(false);
+      }
+    });
+  }
 }

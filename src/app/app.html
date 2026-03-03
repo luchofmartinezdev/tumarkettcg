@@ -1,5 +1,17 @@
 <app-navbar></app-navbar>
 
+<!-- Loader global de navegación -->
+@if (isLoading()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+    <div class="flex flex-col items-center gap-3">
+      <div
+        class="w-10 h-10 border-4 border-gray-200 border-t-indigo-500 rounded-full animate-spin"
+      ></div>
+      <span class="text-sm text-gray-500 font-medium">Cargando...</span>
+    </div>
+  </div>
+}
+
 <main class="min-h-screen bg-[#f8fafc]">
   <router-outlet></router-outlet>
 </main>
