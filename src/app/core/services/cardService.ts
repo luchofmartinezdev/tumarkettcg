@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, effect, inject, Injectable, signal } from '@angular/core';
 import {
   Firestore,
   collection,
@@ -6,7 +6,6 @@ import {
   addDoc,
   doc,
   deleteDoc,
-  CollectionReference,
   updateDoc,
   where,
   query
@@ -15,77 +14,62 @@ import { map, Observable } from 'rxjs';
 import { CardPost } from '../models/site-config.model';
 import { AuthService } from './auth';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
-import { generateSlug } from '../../shared/utils/slug';
-import { UserProfileService } from './user-profile';
+import { CollectionResolverService } from './collection-resolver';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class CardService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
   private storage = inject(Storage);
-  private userProfileService = inject(UserProfileService);
+  private resolver = inject(CollectionResolverService);
+  private destroyRef = inject(DestroyRef);
 
-  // Referencia a la colección 'posts' en tu base de datos
-  private postsCollection = collection(this.firestore, 'posts');
+  private get postsCollection() {
+    return collection(this.firestore, this.resolver.postsCollection);
+  }
 
   private _allPosts = signal<CardPost[]>([]);
   public allPosts = this._allPosts.asReadonly();
 
   constructor() {
-    // 1. Armamos la consulta: Solo cartas activas
-    // Opcional: Podés sumar orderBy('createdAt', 'desc') para mostrar las más nuevas arriba
-    const activePostsQuery = query(
-      this.postsCollection,
-      where('active', '==', true)
-    );
+    // Esperamos a que el usuario esté disponible antes de suscribirnos
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (!user) return;
 
-    // 2. Escuchamos esa consulta en lugar de la colección completa
-    // collectionData(activePostsQuery, { idField: 'id' }).subscribe({
-    //   next: (data) => {
-    //     // Casteamos la data para que TypeScript sepa que son CardPosts
-    //     this._allPosts.set(data as CardPost[]);
-    //   },
-    //   error: (err) => console.error('Error cargando las cartas de TuMarketTCG:', err)
-    // });
+      const activePostsQuery = query(
+        this.postsCollection, // getter ya evalúa con el usuario cargado
+        where('active', '==', true)
+      );
 
-    collectionData(activePostsQuery, { idField: 'id' }).pipe(
-      map(posts => posts.map(post => ({
-        ...post,
-        // Convertimos el Timestamp de Firebase a un Date de JS real
-        createdAt: (post['createdAt'] as any)?.toDate() || new Date()
-      } as CardPost)))
-    ).subscribe({
-      next: (data) => {
-        // Casteamos la data para que TypeScript sepa que son CardPosts
-        this._allPosts.set(data as CardPost[]);
-      },
-      error: (err) => console.error('Error cargando las cartas de TuMarketTCG:', err)
+      collectionData(activePostsQuery, { idField: 'id' }).pipe(
+        map(posts => posts.map(post => ({
+          ...post,
+          createdAt: (post['createdAt'] as any)?.toDate() || new Date()
+        } as CardPost)), takeUntilDestroyed(this.destroyRef))
+      ).subscribe({
+        next: (data) => this._allPosts.set(data as CardPost[]),
+        error: (err) => console.error('Error cargando las cartas de TuMarketTCG:', err)
+      });
     });
   }
 
   async createPost(postData: Partial<CardPost>) {
     const currentUser = this.authService.currentUser();
     if (!currentUser) throw new Error('Debes iniciar sesión para publicar una carta.');
-    const userProfile = await this.userProfileService.getProfile(currentUser.uid);
 
     const newPost = {
       ...postData,
       userId: currentUser.uid,
       userName: currentUser.displayName || 'Usuario Anónimo',
-      userSlug: userProfile?.slug || null,
+      userEmail: currentUser.email,
       createdAt: new Date(),
       active: true
     };
 
     try {
       const docRef = await addDoc(this.postsCollection, newPost);
-
-      // Generamos el slug con el ID real de Firestore
-      const slug = generateSlug(postData.cardName || '', docRef.id);
-      await updateDoc(docRef, { slug });
-
       return docRef.id;
     } catch (error) {
       console.error('Error al guardar en Firebase:', error);
@@ -93,69 +77,45 @@ export class CardService {
     }
   }
 
-  // MÉTODO PARA EDITAR
   async updatePost(id: string, data: Partial<CardPost>) {
-    // Creamos una referencia al documento específico usando su ID
-    const docRef = doc(this.firestore, `posts/${id}`);
-
-    // Actualizamos solo los campos que cambiaron
+    const docRef = doc(this.firestore, `${this.resolver.postsCollection}/${id}`); // ← usa resolver
     return updateDoc(docRef, data);
   }
 
   async deletePost(id: string, imagePath?: string) {
-    // 1. Eliminamos la imagen de Storage si existe
     if (imagePath) {
       try {
         const imageRef = ref(this.storage, imagePath);
         await deleteObject(imageRef);
       } catch (error) {
-        // Si la imagen no existe en Storage no rompemos el flujo
         console.warn('No se pudo eliminar la imagen de Storage:', error);
       }
     }
 
-    // 2. Eliminamos el documento de Firestore
-    const docRef = doc(this.firestore, `posts/${id}`);
+    const docRef = doc(this.firestore, `${this.resolver.postsCollection}/${id}`); // ← usa resolver
     return deleteDoc(docRef);
   }
 
   async toggleStatus(id: string, currentStatus: boolean) {
-    // 1. Apuntamos a la carta específica
-    const docRef = doc(this.firestore, `posts/${id}`);
-
-    // 2. Mandamos a actualizar SOLO el campo 'active' con el valor invertido
-    return updateDoc(docRef, {
-      active: !currentStatus
-    });
+    const docRef = doc(this.firestore, `${this.resolver.postsCollection}/${id}`); // ← usa resolver
+    return updateDoc(docRef, { active: !currentStatus });
   }
 
-  // Devuelve un Observable con las cartas de un usuario específico
   getUserPosts(userId: string): Observable<CardPost[]> {
-    // 1. Armamos la consulta: Buscar en la colección 'posts'
-    // donde el campo 'userId' sea igual al ID que le pasamos
     const userPostsQuery = query(
       this.postsCollection,
       where('userId', '==', userId)
     );
-
-    // 2. Ejecutamos la consulta y devolvemos el flujo de datos
-    // El { idField: 'id' } es clave para que Firebase nos inyecte el ID del documento
-    // y después podamos usarlo para editar o borrar la carta
     return collectionData(userPostsQuery, { idField: 'id' }) as Observable<CardPost[]>;
   }
 
   async uploadImage(file: File): Promise<{ url: string, path: string }> {
-    // 1. Creamos un nombre único para el archivo (usando el tiempo y un ID aleatorio)
     const filePath = `posts/${Date.now()}_${Math.random().toString(36).substring(2)}`;
     const fileRef = ref(this.storage, filePath);
 
     try {
-      // 2. Subimos los bytes del archivo
       await uploadBytes(fileRef, file);
-
-      // 3. Obtenemos la URL de descarga
       const url = await getDownloadURL(fileRef);
-
       return { url, path: filePath };
     } catch (error) {
       console.error('Error al subir imagen a Storage:', error);
@@ -164,7 +124,7 @@ export class CardService {
   }
 
   async markAsSold(id: string, buyerName?: string): Promise<void> {
-    const docRef = doc(this.firestore, `posts/${id}`);
+    const docRef = doc(this.firestore, `${this.resolver.postsCollection}/${id}`); // ← usa resolver
     await updateDoc(docRef, {
       isSold: true,
       active: false,
