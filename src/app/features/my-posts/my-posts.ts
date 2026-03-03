@@ -6,6 +6,8 @@ import { CardService } from '../../core/services/cardService';
 import { AuthService } from '../../core/services/auth';
 import { CardPost, TradeType } from '../../core/models/site-config.model';
 import { Observable, of } from 'rxjs';
+import { ToastService } from '../../core/services/toast';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-my-posts',
@@ -17,6 +19,8 @@ import { Observable, of } from 'rxjs';
 export class MyPostsComponent {
   public cardService = inject(CardService);
   private authService = inject(AuthService);
+  private toastService = inject(ToastService);
+  private router = inject(Router);
 
   myPosts$: Observable<CardPost[]> = of([]);
   public TradeType = TradeType;
@@ -30,6 +34,23 @@ export class MyPostsComponent {
     const currentUser = this.authService.currentUser();
     if (currentUser) {
       this.myPosts$ = this.cardService.getUserPosts(currentUser.uid);
+    }
+
+    const toastState = window.history.state?.['toast'];
+
+    if (toastState === 'created' || toastState === 'updated') {
+      setTimeout(() => {
+        console.log('disparando toast:', toastState);
+        console.log('toasts antes:', this.toastService.toasts());
+
+        if (toastState === 'created') {
+          this.toastService.success('¡Publicación creada correctamente!');
+        } else {
+          this.toastService.success('¡Publicación actualizada correctamente!');
+        }
+
+        console.log('toasts después:', this.toastService.toasts());
+      }, 100);
     }
   }
 

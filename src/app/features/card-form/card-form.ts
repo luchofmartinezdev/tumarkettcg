@@ -6,6 +6,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { CardService } from '../../core/services/cardService';
 import { DropdownComponent } from '../../shared/dropdown/dropdown';
+import { ToastService } from '../../core/services/toast';
+import { firstValueFrom } from 'rxjs';
+import { extractShortId } from '../../shared/utils/slug';
 
 @Component({
   selector: 'app-card-form',
@@ -19,6 +22,7 @@ export class CardFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
+  private toastService = inject(ToastService);
 
   public isEditMode = false;
   public isOpen = false;
@@ -54,15 +58,14 @@ export class CardFormComponent implements OnInit {
   ngOnInit() {
     const user = this.authService.currentUser();
     if (user) {
-      // Usamos user.displayName o user.name según como lo tengas en tu AuthService
       this.cardForm.patchValue({ userName: user.displayName });
     }
 
     this.setupTypeListener();
 
-    this.editId = this.route.snapshot.paramMap.get('id');
-    if (this.editId) {
-      this.prepareEditMode(this.editId);
+    const slug = this.route.snapshot.paramMap.get('slug');
+    if (slug) {
+      this.prepareEditMode(slug);
     }
   }
 
@@ -95,21 +98,36 @@ export class CardFormComponent implements OnInit {
     });
   }
 
-  private prepareEditMode(id: string) {
-    const postToEdit = this.cardService.allPosts().find(p => p.id === id);
+  private async prepareEditMode(slug: string): Promise<void> {
+    let postToEdit = this.cardService.allPosts().find(p => p.slug === slug);
+
+    if (!postToEdit) {
+      const user = this.authService.currentUser();
+      if (!user) {
+        this.router.navigate(['/publicar']);
+        return;
+      }
+
+      const allUserPosts = await firstValueFrom(
+        this.cardService.getUserPosts(user.uid)
+      );
+
+      // Buscamos por slug, con fallback al shortId para posts viejos sin slug
+      postToEdit = allUserPosts.find(p =>
+        p.slug === slug || p.id.startsWith(extractShortId(slug))
+      );
+    }
 
     if (postToEdit) {
       this.isEditMode = true;
+      this.editId = postToEdit.id;
       this.cardForm.patchValue(postToEdit);
       if (postToEdit.type === TradeType.BUSCO) {
         this.cardForm.get('price')?.disable();
       }
-
-      // 👇 Cargar la imagen existente en la preview
       if (postToEdit.imageUrl) {
         this.imagePreview = postToEdit.imageUrl;
       }
-
     } else {
       this.router.navigate(['/publicar']);
     }
@@ -137,38 +155,33 @@ export class CardFormComponent implements OnInit {
         active: true,
         userId: user.uid, // Ya lo dejamos firme acá
         userName: user.displayName,
+
       };
 
       try {
-        // 2. Lógica de Imagen: Si el usuario seleccionó un archivo, lo subimos
         if (this.selectedFile) {
           const imageData = await this.cardService.uploadImage(this.selectedFile);
           postData.imageUrl = imageData.url;
           postData.imagePath = imageData.path;
         } else if (this.isEditMode) {
-          // Modo edición sin imagen nueva → preservar la existente
           const existing = this.cardService.allPosts().find(p => p.id === this.editId);
           if (existing?.imageUrl) postData.imageUrl = existing.imageUrl;
           if (existing?.imagePath) postData.imagePath = existing.imagePath;
         }
 
-        // 3. Guardado en Firestore
         if (this.isEditMode && this.editId) {
           await this.cardService.updatePost(this.editId, postData);
+          this.router.navigate(['/mis-anuncios'], { state: { toast: 'updated' } });
         } else {
-          await this.cardService.createPost({
-            ...postData,
-            createdAt: new Date().toISOString()
-          });
+          await this.cardService.createPost({ ...postData, createdAt: new Date().toISOString() });
+          this.router.navigate(['/mis-anuncios'], { state: { toast: 'created' } });
         }
-
-        this.router.navigate(['/mis-anuncios']);
 
       } catch (error) {
         console.error('Error en el proceso:', error);
-        alert('Hubo un error al procesar la publicación.');
+        this.toastService.error('Hubo un error al procesar la publicación.'); // ← reemplaza alert
       } finally {
-        this.isLoading = false; // Se libera pase lo que pase
+        this.isLoading = false;
       }
     }
   }

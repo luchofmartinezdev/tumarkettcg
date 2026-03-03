@@ -117,7 +117,7 @@
                           Vendida
                         </button>
                         <a
-                          [routerLink]="['/editar', post.id]"
+                          [routerLink]="['/editar', post.slug ?? post.id]"
                           class="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-800 py-1"
                         >
                           Editar

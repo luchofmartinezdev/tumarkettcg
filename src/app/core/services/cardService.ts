@@ -16,6 +16,7 @@ import { AuthService } from './auth';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { CollectionResolverService } from './collection-resolver';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { generateSlug } from '../../shared/utils/slug';
 
 @Injectable({ providedIn: 'root' })
 export class CardService {
@@ -70,6 +71,9 @@ export class CardService {
 
     try {
       const docRef = await addDoc(this.postsCollection, newPost);
+      const slug = generateSlug(postData.cardName ?? 'carta', docRef.id);
+      await updateDoc(docRef, { slug });
+
       return docRef.id;
     } catch (error) {
       console.error('Error al guardar en Firebase:', error);
