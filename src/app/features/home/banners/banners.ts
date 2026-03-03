@@ -17,9 +17,8 @@ export class BannersComponent {
   private router = inject(Router);
 
   // Navegación directa a las rutas de landing
-  navigateTo(type: 'vendo' | 'busco') { 
+  navigateTo(type: 'vendo' | 'busco') {
     const dest = `/${type}`;
-    console.log('Navegando a:', dest);
-    this.router.navigate([dest]); // Probá sin el "/" inicial también
+    this.router.navigate([dest]);
   }
 }

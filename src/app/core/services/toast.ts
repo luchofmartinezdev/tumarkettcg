@@ -19,8 +19,7 @@ export class ToastService {
     setTimeout(() => this.remove(id), duration);
   }
 
-  remove(id: number) {
-    console.log('remove llamado para id:', id, new Date().toISOString());
+  remove(id: number) { 
     this.toasts.update(t => t.filter(toast => toast.id !== id));
   }
 

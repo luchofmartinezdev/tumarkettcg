@@ -178,7 +178,7 @@ export class CardFormComponent implements OnInit {
         }
 
       } catch (error) {
-        console.error('Error en el proceso:', error);
+        this.router.navigate(['/mis-anuncios'], { state: { toast: 'error' } });
         this.toastService.error('Hubo un error al procesar la publicación.'); // ← reemplaza alert
       } finally {
         this.isLoading = false;

@@ -37,19 +37,13 @@ export class MyPostsComponent {
     }
 
     const toastState = window.history.state?.['toast'];
-
     if (toastState === 'created' || toastState === 'updated') {
       setTimeout(() => {
-        console.log('disparando toast:', toastState);
-        console.log('toasts antes:', this.toastService.toasts());
-
         if (toastState === 'created') {
           this.toastService.success('¡Publicación creada correctamente!');
         } else {
           this.toastService.success('¡Publicación actualizada correctamente!');
         }
-
-        console.log('toasts después:', this.toastService.toasts());
       }, 100);
     }
   }
