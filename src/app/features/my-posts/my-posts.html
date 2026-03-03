@@ -30,9 +30,10 @@
       </div>
 
       <div
-        class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+        class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden transition-colors"
       >
-        <div class="overflow-x-auto">
+        <!-- Vista Desktop: Tabla (Visible en md y superior) -->
+        <div class="hidden md:block overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
               <tr
@@ -115,7 +116,6 @@
                   <td class="px-8 py-6 text-right">
                     <div class="flex justify-end gap-4">
                       @if (post.isSold) {
-                        <!-- VENDIDO: solo eliminar -->
                         <button
                           (click)="onDelete(post)"
                           class="text-[10px] font-black text-red-400 hover:text-red-600 dark:hover:text-red-300 uppercase tracking-widest py-1"
@@ -123,7 +123,6 @@
                           Eliminar
                         </button>
                       } @else if (post.active) {
-                        <!-- ACTIVO: Vendida, Editar, Pausar, Eliminar -->
                         <button
                           (click)="openSellModal(post)"
                           class="text-[10px] font-black uppercase tracking-widest text-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 py-1"
@@ -149,7 +148,6 @@
                           Eliminar
                         </button>
                       } @else {
-                        <!-- PAUSADO: Activar, Eliminar -->
                         <button
                           (click)="onToggleStatus(post.id, post.active)"
                           class="text-[10px] font-black uppercase tracking-widest text-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400 py-1"
@@ -187,6 +185,132 @@
               }
             </tbody>
           </table>
+        </div>
+
+        <!-- Vista Mobile: Grilla de Tarjetas (Visible solo en mobile/sm) -->
+        <div class="md:hidden divide-y divide-slate-100 dark:divide-slate-700">
+          @for (post of posts; track post.id) {
+            <div class="p-6 flex flex-col gap-4">
+              <div class="flex justify-between items-start gap-4">
+                <div class="flex flex-col">
+                  <span class="font-bold text-slate-900 dark:text-white leading-tight">
+                    {{ post.cardName }}
+                  </span>
+                  <span
+                    class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tighter mt-1"
+                  >
+                    {{ post.franchise }} · {{ post.condition }}
+                  </span>
+                </div>
+                <div>
+                  @if (post.isSold) {
+                    <span
+                      class="bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-800 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest"
+                    >
+                      Vendida
+                    </span>
+                  } @else {
+                    <span
+                      [class]="
+                        post.active
+                          ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800'
+                          : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-600'
+                      "
+                      class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase border tracking-widest transition-colors"
+                    >
+                      {{ post.active ? 'Activo' : 'Pausado' }}
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-lg font-black text-slate-900 dark:text-white">
+                  {{ post.price ? '$' + (post.price | number) : 'A convenir' }}
+                </span>
+
+                @if (post.isSold && post.buyerName) {
+                  <span
+                    class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider"
+                  >
+                    Comprador: {{ post.buyerName }}
+                  </span>
+                }
+              </div>
+
+              <!-- Acciones Mobile: Botones más táctiles -->
+              <div
+                class="flex flex-wrap gap-2 pt-2 border-t border-slate-50 dark:border-slate-700/50 mt-2"
+              >
+                @if (post.isSold) {
+                  <button
+                    (click)="onDelete(post)"
+                    class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-900 rounded-xl text-[9px] font-black text-red-500 uppercase tracking-widest transition-colors"
+                  >
+                    Eliminar
+                  </button>
+                } @else if (post.active) {
+                  <button
+                    (click)="openSellModal(post)"
+                    class="flex-1 py-2.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-[9px] font-black uppercase tracking-widest border border-emerald-100 dark:border-emerald-800/50"
+                  >
+                    Vendido
+                  </button>
+                  <a
+                    [routerLink]="['/editar', post.slug ?? post.id]"
+                    class="flex-1 py-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl text-[9px] font-black uppercase tracking-widest border border-blue-100 dark:border-blue-800/50 text-center"
+                  >
+                    Editar
+                  </a>
+                  <button
+                    (click)="onToggleStatus(post.id, post.active)"
+                    class="flex-1 py-2.5 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-xl text-[9px] font-black uppercase tracking-widest border border-amber-100 dark:border-amber-800/50"
+                  >
+                    Pausar
+                  </button>
+                  <button (click)="onDelete(post)" class="p-2.5 text-red-400 hover:text-red-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                } @else {
+                  <button
+                    (click)="onToggleStatus(post.id, post.active)"
+                    class="flex-1 py-2.5 bg-emerald-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-200 dark:shadow-emerald-900/20"
+                  >
+                    Activar
+                  </button>
+                  <button
+                    (click)="onDelete(post)"
+                    class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-900 text-slate-500 rounded-xl text-[9px] font-black uppercase tracking-widest border border-slate-200 dark:border-slate-700 transition-colors"
+                  >
+                    Eliminar
+                  </button>
+                }
+              </div>
+            </div>
+          } @empty {
+            <div class="px-8 py-20 text-center">
+              <div class="max-w-xs mx-auto">
+                <p
+                  class="text-slate-400 dark:text-slate-500 font-bold uppercase text-xs tracking-[0.2em] mb-4"
+                >
+                  No tenés anuncios todavía
+                </p>
+                <a
+                  routerLink="/publicar"
+                  class="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-lg shadow-blue-200 dark:shadow-blue-900/20 hover:bg-blue-700 transition-all active:scale-95"
+                >
+                  Publicar mi primera carta
+                </a>
+              </div>
+            </div>
+          }
         </div>
       </div>
       @
