@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardCondition, CardLanguage, Franchise, TradeType, RARITIES_BY_FRANCHISE, RarityOption } from '../../core/models/site-config.model';
+import { CardCondition, CardLanguage, Franchise, TradeType, RARITIES_BY_FRANCHISE, RarityOption, Currency } from '../../core/models/site-config.model';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { CardService } from '../../core/services/cardService';
@@ -30,6 +30,7 @@ export class CardFormComponent implements OnInit {
 
   private editId: string | null = null;
   public TradeType = TradeType;
+  public Currency = Currency;
   private CardCondition = CardCondition;
   private Franchise = Franchise;
 
@@ -39,6 +40,7 @@ export class CardFormComponent implements OnInit {
   public conditions = Object.values(CardCondition);
   public franchises = Object.values(Franchise);
   public languages = Object.values(CardLanguage);
+  public currencies = Object.values(Currency);
   availableRarities: RarityOption[] = [];
   rarities: string[] = [];
 
@@ -47,6 +49,7 @@ export class CardFormComponent implements OnInit {
     cardName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(40)]],
     franchise: ['', [Validators.required]],
     price: [null as number | null, [Validators.required, Validators.min(1), Validators.max(9999999)]],
+    currency: [Currency.ARS, [Validators.required]],
     condition: ['', [Validators.required]],
     language: ['', [Validators.required]],
     rarity: ['', [Validators.required]],
@@ -129,15 +132,19 @@ export class CardFormComponent implements OnInit {
   private setupTypeListener() {
     this.cardForm.get('type')?.valueChanges.subscribe((type) => {
       const priceControl = this.cardForm.get('price');
+      const currencyControl = this.cardForm.get('currency');
       if (type === TradeType.BUSCO) {
         priceControl?.disable({ emitEvent: false });
         priceControl?.reset(null, { emitEvent: false });
         priceControl?.clearValidators();
+        currencyControl?.disable({ emitEvent: false });
       } else {
         priceControl?.enable({ emitEvent: false });
         priceControl?.setValidators([Validators.required, Validators.min(1), Validators.max(9999999)]);
+        currencyControl?.enable({ emitEvent: false });
       }
       priceControl?.updateValueAndValidity();
+      currencyControl?.updateValueAndValidity();
     });
   }
 
@@ -167,6 +174,7 @@ export class CardFormComponent implements OnInit {
       this.cardForm.patchValue(postToEdit);
       if (postToEdit.type === TradeType.BUSCO) {
         this.cardForm.get('price')?.disable();
+        this.cardForm.get('currency')?.disable();
       }
       if (postToEdit.imageUrl) {
         this.imagePreview = postToEdit.imageUrl;
@@ -196,6 +204,7 @@ export class CardFormComponent implements OnInit {
         cardName: val.cardName,
         franchise: val.franchise,
         price: val.type === TradeType.VENDO ? val.price : null,
+        currency: val.type === TradeType.VENDO ? val.currency : null,
         condition: val.condition,
         language: val.language,
         rarity: val.rarity,

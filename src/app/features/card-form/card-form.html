@@ -98,16 +98,39 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex flex-col gap-2">
             @if (cardForm.get('type')?.value === TradeType.VENDO) {
-              <label
-                class="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-4"
-              >
-                Precio (ARS) <span class="text-red-400">*</span>
-              </label>
+              <div class="flex justify-between items-center mb-1 pr-4">
+                <label
+                  class="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-4"
+                >
+                  Precio ({{ cardForm.get('currency')?.value }}) <span class="text-red-400">*</span>
+                </label>
+
+                <!-- Selector moneda -->
+                <div
+                  class="flex bg-slate-100 dark:bg-slate-900/50 p-0.5 rounded-lg border border-slate-200 dark:border-slate-800"
+                >
+                  @for (curr of currencies; track curr) {
+                    <button
+                      type="button"
+                      (click)="cardForm.patchValue({ currency: curr })"
+                      [class]="
+                        cardForm.get('currency')?.value === curr
+                          ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-white shadow-sm'
+                          : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                      "
+                      class="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tight transition-all"
+                    >
+                      {{ curr }}
+                    </button>
+                  }
+                </div>
+              </div>
+
               <div class="relative group">
                 <span
                   class="absolute left-6 top-1/2 -translate-y-1/2 text-sm font-black text-blue-600/50 group-focus-within:text-blue-600 transition-colors"
                 >
-                  $
+                  {{ cardForm.get('currency')?.value === Currency.ARS ? '$' : 'u$s' }}
                 </span>
                 <input
                   formControlName="price"

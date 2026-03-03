@@ -3,6 +3,11 @@ export enum TradeType {
   BUSCO = 'Busco'
 }
 
+export enum Currency {
+  ARS = 'ARS',
+  USD = 'USD'
+}
+
 export enum SortOption {
   RECENT = 'Más recientes',
   AZ = 'Nombre (A-Z)',
@@ -144,6 +149,7 @@ export interface CardPost {
   cardName: string;
   franchise: Franchise;
   price?: number;
+  currency?: Currency;
   condition: CardCondition;
   type: TradeType;
   whatsappContact: string;
