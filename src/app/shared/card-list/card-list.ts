@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { CardPost, TradeType } from '../../core/models/site-config.model';
 import { FavoriteService } from '../../core/services/favorite';
 import { AuthService } from '../../core/services/auth';
+import { ContactService } from '../../core/services/contact'; // 👈 nuevo
 
 @Component({
   selector: 'app-card-list',
@@ -13,13 +14,13 @@ import { AuthService } from '../../core/services/auth';
 })
 export class CardListComponent implements OnInit {
   posts = input.required<CardPost[]>();
-  onContactAction = output<CardPost>();
 
   public TradeType = TradeType;
   public favoriteIds = signal<Set<string>>(new Set());
 
   private favoriteService = inject(FavoriteService);
   public authService = inject(AuthService);
+  private contactService = inject(ContactService); // 👈 nuevo
 
   async ngOnInit() {
     const user = this.authService.currentUser();
@@ -56,6 +57,6 @@ export class CardListComponent implements OnInit {
   }
 
   handleContact(post: CardPost) {
-    this.onContactAction.emit(post);
+    this.contactService.handleContact(post); // 👈 unificado
   }
 }

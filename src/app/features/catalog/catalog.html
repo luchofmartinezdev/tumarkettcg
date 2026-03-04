@@ -129,17 +129,9 @@
         <section class="animate-in fade-in slide-in-from-bottom-4 duration-1000">
           @if (orderedPosts().length > 0) {
             @if (viewMode() === 'grid') {
-              <app-card-grid
-                [posts]="orderedPosts()"
-                (onContactAction)="handleContactClick($event)"
-              >
-              </app-card-grid>
+              <app-card-grid [posts]="orderedPosts()"> </app-card-grid>
             } @else {
-              <app-card-list
-                [posts]="orderedPosts()"
-                (onContactAction)="handleContactClick($event)"
-              >
-              </app-card-list>
+              <app-card-list [posts]="orderedPosts()"> </app-card-list>
             }
           } @else {
             <div

@@ -17,7 +17,7 @@ export class AuthService {
       this.currentUser.set(user);
     });
   }
-// EL NUEVO LOGIN OFICIAL DE GOOGLE
+  // EL NUEVO LOGIN OFICIAL DE GOOGLE
   async loginWithGoogle() {
     try {
       const provider = new GoogleAuthProvider();

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BannersComponent } from './banners/banners';
 import { CardService } from '../../core/services/cardService';
 import { AuthService } from '../../core/services/auth';
+import { ContactService } from '../../core/services/contact'; // 👈 importación añadida
 import { TradeType } from '../../core/models/site-config.model';
 
 @Component({
@@ -15,23 +16,17 @@ import { TradeType } from '../../core/models/site-config.model';
 export class HomeComponent implements OnInit {
   public cardService = inject(CardService);
   public authService = inject(AuthService);
+  private contactService = inject(ContactService);
   private route = inject(ActivatedRoute);
-  public TradeType = TradeType;
-
-
   private router = inject(Router);
+  public TradeType = TradeType;
 
   searchTerm = signal<string>('');
   filterType = signal<string | null>(null);
 
   ngOnInit() {
-    const pending = this.authService.getPendingContact();
-    if (pending && this.authService.currentUser()) {
-      // Disparamos el WhatsApp
-      this.contactUser(pending.phone, pending.cardName, pending.type);
-      // Limpiamos para que no se abra cada vez que recargue
-      this.authService.clearPendingContact();
-    }
+    this.contactService.checkPendingContact(); // 👈 unificado
+
     this.route.data.subscribe(data => {
       if (data['filterType']) {
         this.filterType.set(data['filterType']);
@@ -44,18 +39,10 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  contactUser(phone: string, cardName: string, type: TradeType) {
-    const action = type === TradeType.VENDO ? 'comprar' : 'ofrecerte';
-    const message = `Hola! Vi tu anuncio en TuMarketTCG. Me interesa ${action} la carta: ${cardName}`;
-
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
-  }
-
   public hasAnyPosts = computed(() => this.cardService.allPosts().length > 0);
 
   filteredPosts = computed(() => {
-    let posts = this.cardService.allPosts(); // Suponiendo que tenés un signal en el service
+    let posts = this.cardService.allPosts();
 
     const type = this.filterType();
     if (type) {
@@ -73,21 +60,6 @@ export class HomeComponent implements OnInit {
   updateSearch(event: Event) {
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
-  }
-
-  handleContactClick(post: any) {
-    if (this.authService.currentUser()) {
-      // Si está logueado, directo a WhatsApp
-      this.contactUser(post.whatsappContact, post.cardName, post.type);
-    } else {
-      // Si NO está logueado, guardamos la info y vamos al login
-      this.authService.setPendingContact({
-        phone: post.whatsappContact,
-        cardName: post.cardName,
-        type: post.type
-      });
-      this.router.navigate(['/login']);
-    }
   }
 
   clearFilters() {

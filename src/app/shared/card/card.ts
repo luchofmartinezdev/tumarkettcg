@@ -4,6 +4,7 @@ import { CardPost, TradeType } from '../../core/models/site-config.model';
 import { RouterModule } from '@angular/router';
 import { FavoriteService } from '../../core/services/favorite';
 import { AuthService } from '../../core/services/auth';
+import { ContactService } from '../../core/services/contact'; // 👈 nuevo
 
 @Component({
   selector: 'app-card',
@@ -13,13 +14,13 @@ import { AuthService } from '../../core/services/auth';
 })
 export class CardComponent implements OnInit {
   post = input.required<CardPost>();
-  onContact = output<CardPost>();
 
   public TradeType = TradeType;
   public isFavorite = signal(false);
 
   private favoriteService = inject(FavoriteService);
   public authService = inject(AuthService);
+  private contactService = inject(ContactService); // 👈 nuevo
 
   async ngOnInit() {
     const user = this.authService.currentUser();
@@ -28,7 +29,7 @@ export class CardComponent implements OnInit {
   }
 
   handleContact() {
-    this.onContact.emit(this.post());
+    this.contactService.handleContact(this.post()); // 👈 unificado
   }
 
   async toggleFavorite(event: Event) {

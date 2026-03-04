@@ -3,7 +3,6 @@
     @for (item of posts(); track item.id) {
       <app-card
         [post]="item"
-        (onContact)="handleContact($event)"
         class="animate-in fade-in slide-in-from-bottom-4 duration-500"
         [style.animation-delay.ms]="$index * 50"
       >

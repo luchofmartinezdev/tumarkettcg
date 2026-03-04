@@ -7,6 +7,7 @@ import { StarRatingComponent } from '../../shared/star-rating/star-rating';
 import { AuthService } from '../../core/services/auth';
 import { RatingService } from '../../core/services/rating';
 import { FavoriteService } from '../../core/services/favorite';
+import { ContactService } from '../../core/services/contact'; // 👈 nuevo
 import { extractShortId } from '../../shared/utils/slug';
 import { Observable, of } from 'rxjs';
 
@@ -23,6 +24,7 @@ export class CardDetailComponent implements OnInit {
   private ratingService = inject(RatingService);
   private favoriteService = inject(FavoriteService);
   public authService = inject(AuthService);
+  private contactService = inject(ContactService); // 👈 nuevo
 
   public post = signal<CardPost | undefined>(undefined);
   public sellerRatings$: Observable<SellerRating[]> = of([]);
@@ -32,6 +34,7 @@ export class CardDetailComponent implements OnInit {
   goBack() { this.location.back(); }
 
   async ngOnInit() {
+    this.contactService.checkPendingContact(); // 👈 unificado
     const slug = this.route.snapshot.paramMap.get('slug');
     if (!slug) return;
 
@@ -79,8 +82,8 @@ export class CardDetailComponent implements OnInit {
 
   handleContact() {
     const p = this.post();
-    if (!p) return;
-    const message = `Hola! Vi tu publicación de "${p.cardName}" en TuMarketTCG y me interesa.`;
-    window.open(`https://wa.me/${p.whatsappContact}?text=${encodeURIComponent(message)}`, '_blank');
+    if (p) {
+      this.contactService.handleContact(p); // 👈 unificado
+    }
   }
 }
