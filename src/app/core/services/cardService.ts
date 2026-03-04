@@ -34,25 +34,27 @@ export class CardService {
   public allPosts = this._allPosts.asReadonly();
 
   constructor() {
-    // Esperamos a que el usuario esté disponible antes de suscribirnos
-    effect(() => {
-      const user = this.authService.currentUser();
-      if (!user) return;
-
+    // Escuchamos cambios en el usuario o en la configuración de colecciones
+    effect((onCleanup) => {
+      // Acceder a postsCollection registra la dependencia reactiva
       const activePostsQuery = query(
-        this.postsCollection, // getter ya evalúa con el usuario cargado
+        this.postsCollection,
         where('active', '==', true)
       );
 
-      collectionData(activePostsQuery, { idField: 'id' }).pipe(
+      const subscription = collectionData(activePostsQuery, { idField: 'id' }).pipe(
         map(posts => posts.map(post => ({
           ...post,
           createdAt: (post['createdAt'] as any)?.toDate() || new Date()
-        } as CardPost)), takeUntilDestroyed(this.destroyRef))
+        } as CardPost)))
       ).subscribe({
         next: (data) => this._allPosts.set(data as CardPost[]),
         error: (err) => console.error('Error cargando las cartas de TuMarketTCG:', err)
       });
+
+      // Limpiamos la suscripción anterior si el efecto se vuelve a ejecutar
+      // (por ejemplo, si el usuario inicia o cierra sesión)
+      onCleanup(() => subscription.unsubscribe());
     });
   }
 
