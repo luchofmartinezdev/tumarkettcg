@@ -30,6 +30,7 @@ export class CatalogComponent implements OnInit {
 
   public TradeType = TradeType;
   public activeFilters = signal<FilterState | null>(null);
+  public showFiltersMobile = signal<boolean>(false);
 
   ngOnInit() {
     this.contactService.checkPendingContact();
@@ -89,6 +90,18 @@ export class CatalogComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
   }
+
+  public activeFiltersCount = computed(() => {
+    const filters = this.activeFilters();
+    if (!filters) return 0;
+    let count = 0;
+    // El precio siempre tiene valor por defecto, así que solo contamos si es distinto al máximo inicial o si queremos ser estrictos
+    if (filters.maxPrice < 150000) count++;
+    if (filters.condition) count++;
+    if (filters.language) count++;
+    if (filters.rarity) count++;
+    return count;
+  });
 
   handleFiltersChange(filters: FilterState) {
     this.activeFilters.set(filters);

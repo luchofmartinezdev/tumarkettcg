@@ -1,4 +1,4 @@
-import { DestroyRef, effect, inject, Injectable, signal } from '@angular/core';
+import { DestroyRef, effect, inject, Injectable, signal, Injector } from '@angular/core';
 import {
   Firestore,
   collection,
@@ -10,12 +10,12 @@ import {
   where,
   query
 } from '@angular/fire/firestore';
-import { map, Observable } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { CardPost } from '../models/site-config.model';
 import { AuthService } from './auth';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { CollectionResolverService } from './collection-resolver';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { generateSlug } from '../../shared/utils/slug';
 
 @Injectable({ providedIn: 'root' })
@@ -27,34 +27,33 @@ export class CardService {
   private destroyRef = inject(DestroyRef);
 
   private get postsCollection() {
-    return collection(this.firestore, this.resolver.postsCollection);
+    return collection(this.firestore, this.resolver.postsCollection());
   }
 
   private _allPosts = signal<CardPost[]>([]);
   public allPosts = this._allPosts.asReadonly();
 
   constructor() {
-    // Escuchamos cambios en el usuario o en la configuración de colecciones
-    effect((onCleanup) => {
-      // Acceder a postsCollection registra la dependencia reactiva
-      const activePostsQuery = query(
-        this.postsCollection,
-        where('active', '==', true)
-      );
+    // Usamos toObservable para reaccionar a cambios en la colección (posts vs posts_test)
+    // sin perder el contexto de inyección de Angular
+    const collection$ = toObservable(this.resolver.postsCollection, { injector: inject(Injector) });
 
-      const subscription = collectionData(activePostsQuery, { idField: 'id' }).pipe(
-        map(posts => posts.map(post => ({
-          ...post,
-          createdAt: (post['createdAt'] as any)?.toDate() || new Date()
-        } as CardPost)))
-      ).subscribe({
-        next: (data) => this._allPosts.set(data as CardPost[]),
-        error: (err) => console.error('Error cargando las cartas de TuMarketTCG:', err)
-      });
-
-      // Limpiamos la suscripción anterior si el efecto se vuelve a ejecutar
-      // (por ejemplo, si el usuario inicia o cierra sesión)
-      onCleanup(() => subscription.unsubscribe());
+    collection$.pipe(
+      switchMap(collectionName => {
+        const activePostsQuery = query(
+          collection(this.firestore, collectionName),
+          where('active', '==', true)
+        );
+        return collectionData(activePostsQuery, { idField: 'id' });
+      }),
+      map((posts: any[]) => posts.map(post => ({
+        ...post,
+        createdAt: (post['createdAt'] as any)?.toDate() || new Date()
+      } as CardPost))),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (data) => this._allPosts.set(data),
+      error: (err) => console.error('Error cargando las cartas de TuMarketTCG:', err)
     });
   }
 
@@ -84,7 +83,7 @@ export class CardService {
   }
 
   async updatePost(id: string, data: Partial<CardPost>) {
-    const docRef = doc(this.firestore, `${this.resolver.postsCollection}/${id}`); // ← usa resolver
+    const docRef = doc(this.firestore, `${this.resolver.postsCollection()}/${id}`);
     return updateDoc(docRef, data);
   }
 
@@ -98,12 +97,12 @@ export class CardService {
       }
     }
 
-    const docRef = doc(this.firestore, `${this.resolver.postsCollection}/${id}`); // ← usa resolver
+    const docRef = doc(this.firestore, `${this.resolver.postsCollection()}/${id}`);
     return deleteDoc(docRef);
   }
 
   async toggleStatus(id: string, currentStatus: boolean) {
-    const docRef = doc(this.firestore, `${this.resolver.postsCollection}/${id}`); // ← usa resolver
+    const docRef = doc(this.firestore, `${this.resolver.postsCollection()}/${id}`);
     return updateDoc(docRef, { active: !currentStatus });
   }
 
@@ -130,7 +129,7 @@ export class CardService {
   }
 
   async markAsSold(id: string, buyerName?: string): Promise<void> {
-    const docRef = doc(this.firestore, `${this.resolver.postsCollection}/${id}`); // ← usa resolver
+    const docRef = doc(this.firestore, `${this.resolver.postsCollection()}/${id}`);
     await updateDoc(docRef, {
       isSold: true,
       active: false,

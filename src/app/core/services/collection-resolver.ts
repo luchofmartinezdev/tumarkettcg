@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, computed } from '@angular/core';
 import { Firestore, doc, docData } from '@angular/fire/firestore';
 import { AuthService } from './auth';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -17,8 +17,8 @@ export class CollectionResolverService {
     { initialValue: [] as string[] }
   );
 
-  get postsCollection(): string {
+  public postsCollection = computed(() => {
     const email = this.authService.currentUser()?.email?.toLowerCase() ?? '';
     return this.testEmails().includes(email) ? 'posts_test' : 'posts';
-  }
+  });
 }

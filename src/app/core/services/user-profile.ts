@@ -16,18 +16,34 @@ export class UserProfileService {
     return snap.exists() ? (snap.data() as UserProfile) : null;
   }
 
+  async ensureProfile(user: any): Promise<void> {
+    const ref = doc(this.firestore, `users/${user.uid}`);
+    const snap = await getDoc(ref);
+    
+    if (!snap.exists()) {
+      const slug = generateSlug(user.displayName || 'usuario', user.uid);
+      const initialProfile: UserProfile = {
+        uid: user.uid,
+        displayName: user.displayName || 'Usuario Anónimo',
+        photoURL: user.photoURL || '',
+        slug: slug,
+        totalSales: 0,
+        showLocation: false,
+        createdAt: new Date()
+      };
+      await setDoc(ref, initialProfile);
+    }
+  }
+
   async saveProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
     const ref = doc(this.firestore, `users/${uid}`);
-    const snap = await getDoc(ref);
 
-    // Generamos el slug con el nombre del usuario
-    const slug = generateSlug(data.displayName || uid, uid);
-
-    if (snap.exists()) {
-      await updateDoc(ref, { ...data, slug });
-    } else {
-      await setDoc(ref, { uid, totalSales: 0, slug, ...data });
+    // Si viene un displayName nuevo, actualizamos el slug también
+    if (data.displayName) {
+      data.slug = generateSlug(data.displayName, uid);
     }
+
+    await updateDoc(ref, data);
   }
 
   async getProfileBySlug(slug: string): Promise<UserProfile | null> {

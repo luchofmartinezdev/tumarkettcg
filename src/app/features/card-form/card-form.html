@@ -14,7 +14,64 @@
     </header>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
-      <form [formGroup]="cardForm" (ngSubmit)="onSubmit()" class="lg:col-span-7 space-y-7">
+      <!-- Foto de la carta (Aparece arriba en móvil, a la derecha en escritorio) -->
+      <div class="lg:col-span-5 flex flex-col lg:order-2">
+        <label
+          class="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4 ml-4"
+          >Foto de la carta</label
+        >
+        <input
+          type="file"
+          #fileInput
+          (change)="onFileSelected($event)"
+          accept="image/*"
+          class="hidden"
+        />
+        <div
+          (click)="fileInput.click()"
+          class="relative flex-1 min-h-[450px] bg-slate-50 dark:bg-slate-700/50 border-2 border-dashed border-slate-200 dark:border-slate-600 rounded-[3rem] overflow-hidden group cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all flex items-center justify-center"
+        >
+          @if (imagePreview) {
+            <img
+              [src]="imagePreview"
+              class="absolute inset-0 w-full h-full object-contain p-4 animate-in fade-in duration-500"
+            />
+            <div
+              class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+            >
+              <span
+                class="text-white text-[10px] font-black uppercase tracking-widest bg-slate-900/60 dark:bg-blue-600/80 px-6 py-3 rounded-full"
+                >Cambiar Foto</span
+              >
+            </div>
+          } @else {
+            <div class="text-center">
+              <div
+                class="h-16 w-16 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-300 dark:text-slate-600 mx-auto mb-4"
+              >
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <p class="text-xs font-bold text-slate-500 dark:text-slate-400">
+                Subir foto vertical
+              </p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <form
+        [formGroup]="cardForm"
+        (ngSubmit)="onSubmit()"
+        class="lg:col-span-7 space-y-7 lg:order-1"
+      >
         <div class="flex p-1.5 bg-slate-100 dark:bg-slate-700 rounded-2xl gap-1">
           <button
             type="button"
@@ -252,57 +309,6 @@
           </button>
         </div>
       </form>
-
-      <div class="lg:col-span-5 flex flex-col">
-        <label
-          class="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-4 ml-4"
-          >Foto de la carta</label
-        >
-        <input
-          type="file"
-          #fileInput
-          (change)="onFileSelected($event)"
-          accept="image/*"
-          class="hidden"
-        />
-        <div
-          (click)="fileInput.click()"
-          class="relative flex-1 min-h-[450px] bg-slate-50 dark:bg-slate-700/50 border-2 border-dashed border-slate-200 dark:border-slate-600 rounded-[3rem] overflow-hidden group cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all flex items-center justify-center"
-        >
-          @if (imagePreview) {
-            <img
-              [src]="imagePreview"
-              class="absolute inset-0 w-full h-full object-contain p-4 animate-in fade-in duration-500"
-            />
-            <div
-              class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-            >
-              <span
-                class="text-white text-[10px] font-black uppercase tracking-widest bg-slate-900/60 dark:bg-blue-600/80 px-6 py-3 rounded-full"
-                >Cambiar Foto</span
-              >
-            </div>
-          } @else {
-            <div class="text-center">
-              <div
-                class="h-16 w-16 bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center text-slate-300 dark:text-slate-600 mx-auto mb-4"
-              >
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <p class="text-xs font-bold text-slate-500 dark:text-slate-400">
-                Subir foto vertical
-              </p>
-            </div>
-          }
-        </div>
-      </div>
     </div>
   </div>
 </div>
