@@ -45,6 +45,11 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
+        path: 'publicar-masivo',
+        loadComponent: () => import('./features/bulk-upload/bulk-upload').then(m => m.BulkUploadComponent),
+        canActivate: [authGuard]
+    },
+    {
         path: 'perfil',
         loadComponent: () => import('./features/profile/profile').then(m => m.ProfileComponent),
         canActivate: [authGuard],
