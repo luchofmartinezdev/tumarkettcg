@@ -7,8 +7,8 @@ import { MyPostsComponent } from "../my-posts/my-posts";
 import { ProfileContactsComponent } from "./tabs/profile-contacts/profile-contacts";
 import { ProfileFavoritesComponent } from "./tabs/profile-favorites/profile-favorites";
 
-type ProfileTab = 'info' | 'anuncios' | 'contactos' | 'favoritos';
-imports: [CommonModule, RouterModule, ProfileInfoComponent]
+type ProfileTab = 'info' | 'anuncios' | 'contactados' | 'favoritos';
+
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -25,7 +25,7 @@ export class ProfileComponent implements OnInit {
   public tabs: { id: ProfileTab; label: string }[] = [
     { id: 'info', label: 'Mi Perfil' },
     { id: 'anuncios', label: 'Anuncios' },
-    { id: 'contactos', label: 'Contactos' },
+    { id: 'contactados', label: 'Mis Contactados' },
     { id: 'favoritos', label: 'Favoritos' },
   ];
 

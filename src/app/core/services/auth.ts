@@ -28,7 +28,7 @@ export class AuthService {
       const provider = new GoogleAuthProvider();
       // Esto abre la ventanita clásica de "Elegir cuenta de Google"
       const result = await signInWithPopup(this.fireAuth, provider);
- 
+
       await this.userProfileService.ensureProfile(result.user);
       this.router.navigate(['/']);
     } catch (error) {
@@ -52,7 +52,16 @@ export class AuthService {
     this.router.navigate(['/']);
   }
 
-  setPendingContact(data: { phone: string, cardName: string, type: string }) {
+  setPendingContact(data: {
+    phone: string,
+    cardName: string,
+    type: any,
+    price?: number,
+    franchise?: string,
+    sellerId: string,
+    sellerName: string,
+    postId: string
+  }) {
     this.pendingContact = data;
   }
 

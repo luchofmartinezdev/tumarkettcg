@@ -57,10 +57,10 @@ export const routes: Routes = [
         data: { tab: 'anuncios' }
     },
     {
-        path: 'perfil/contactos',
+        path: 'perfil/contactados',
         loadComponent: () => import('./features/profile/profile').then(m => m.ProfileComponent),
         canActivate: [authGuard],
-        data: { tab: 'contactos' }
+        data: { tab: 'contactados' }
     },
     {
         path: 'perfil/favoritos',

@@ -72,7 +72,12 @@ export class SearchResultsComponent implements OnInit {
       this.authService.setPendingContact({
         phone: post.whatsappContact,
         cardName: post.cardName,
-        type: post.type
+        type: post.type,
+        price: post.price,
+        franchise: post.franchise,
+        sellerId: post.userId,
+        sellerName: post.userName,
+        postId: post.id
       });
       this.router.navigate(['/login']);
     }

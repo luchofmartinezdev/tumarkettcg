@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, deleteDoc, doc, query, orderBy } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, addDoc, deleteDoc, doc, query, orderBy, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { CardPost, ContactRecord, TradeType } from '../models/site-config.model';
@@ -26,19 +26,27 @@ export class ContactService {
         sellerName: post.userName,
         postId: post.id,
         cardName: post.cardName,
+        franchise: post.franchise,
+        price: post.price,
         whatsappContact: post.whatsappContact,
         type: post.type,
-        contactedAt: new Date()
+        contactedAt: new Date(),
+        wasContacted: false
       });
 
       // 2. Disparamos WhatsApp
       this.openWhatsApp(post);
     } else {
-      // 3. Si no hay login, guardamos pendientes y vamos a login
+      // 3. Si no hay login, guardamos todo para después
       this.authService.setPendingContact({
         phone: post.whatsappContact,
         cardName: post.cardName,
         type: post.type,
+        price: post.price,
+        franchise: post.franchise,
+        sellerId: post.userId,
+        sellerName: post.userName,
+        postId: post.id
       });
       this.router.navigate(['/login']);
     }
@@ -59,9 +67,12 @@ export class ContactService {
         sellerName: pending.sellerName,
         postId: pending.postId,
         cardName: pending.cardName,
+        franchise: pending.franchise,
+        price: pending.price,
         whatsappContact: pending.phone,
         type: pending.type,
-        contactedAt: new Date()
+        contactedAt: new Date(),
+        wasContacted: false
       });
 
       // Disparamos WhatsApp (construyendo un post parcial para el método)
@@ -91,12 +102,16 @@ export class ContactService {
 
   getContacts(userId: string): Observable<ContactRecord[]> {
     const ref = collection(this.firestore, `contacts/${userId}/records`);
-    const q = query(ref, orderBy('contactedAt', 'desc'));
-    return collectionData(q, { idField: 'id' }) as Observable<ContactRecord[]>;
+    return collectionData(ref, { idField: 'id' }) as Observable<ContactRecord[]>;
   }
 
   deleteContact(userId: string, contactId: string): Promise<void> {
     const ref = doc(this.firestore, `contacts/${userId}/records/${contactId}`);
     return deleteDoc(ref);
+  }
+
+  toggleContactedStatus(userId: string, contactId: string, currentStatus: boolean): Promise<void> {
+    const ref = doc(this.firestore, `contacts/${userId}/records/${contactId}`);
+    return updateDoc(ref, { wasContacted: !currentStatus });
   }
 }

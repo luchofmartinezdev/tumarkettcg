@@ -193,9 +193,12 @@ export interface ContactRecord {
   sellerName: string;      // nombre del vendedor
   postId: string;          // id de la publicación
   cardName: string;        // nombre de la carta
+  franchise?: string;      // franquicia de la carta
+  price?: number;          // precio (si aplica)
   whatsappContact: string; // para el botón "volver a contactar"
   type: TradeType;         // VENDO o BUSCO
   contactedAt: Date;       // fecha del contacto
+  wasContacted: boolean;   // si ya se contactó
 }
 
 export interface FavoriteRecord {
