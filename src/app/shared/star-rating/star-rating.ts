@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 })
 export class StarRatingComponent {
   rating = input<number>(0);
-  size = input<'sm' | 'md' | 'lg'>('md');
+  size = input<'xs' | 'sm' | 'md' | 'lg'>('md');
 
   get stars(): { fill: number }[] {
     return Array.from({ length: 5 }, (_, i) => ({
@@ -18,6 +18,6 @@ export class StarRatingComponent {
   }
 
   get sizeClass(): string {
-    return { sm: 'w-3.5 h-3.5', md: 'w-5 h-5', lg: 'w-7 h-7' }[this.size()];
+    return { xs: 'w-3 h-3', sm: 'w-3.5 h-3.5', md: 'w-5 h-5', lg: 'w-7 h-7' }[this.size()];
   }
 }

@@ -117,8 +117,12 @@ export interface SellerRating {
   id: string;
   sellerId: string;
   raterId: string;
+  raterName: string;
+  raterPhoto?: string;
   stars: number;
-  createdAt: Date;
+  comment?: string;
+  createdAt: any;
+  verifiedContact: boolean;
 }
 
 export interface UserProfile {

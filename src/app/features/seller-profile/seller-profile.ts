@@ -10,12 +10,13 @@ import { CardComponent } from '../../shared/card/card';
 import { Observable, of } from 'rxjs';
 import { UserProfileService } from '../../core/services/user-profile';
 import { extractShortId } from '../../shared/utils/slug';
+import { FormsModule } from '@angular/forms';
 import { UserProfile } from '../../core/models/site-config.model';
 
 @Component({
   selector: 'app-seller-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, StarRatingComponent, CardComponent],
+  imports: [CommonModule, RouterModule, StarRatingComponent, CardComponent, FormsModule],
   templateUrl: './seller-profile.html'
 })
 export class SellerProfileComponent implements OnInit {
@@ -33,6 +34,7 @@ export class SellerProfileComponent implements OnInit {
   // Estado del rating
   public hoveredStar = signal<number>(0);
   public selectedStar = signal<number>(0);
+  public comment = signal<string>('');
   public canRate = signal<boolean>(false);
   public hasRated = signal<boolean>(false);
   public ratingSubmitted = signal<boolean>(false);
@@ -87,7 +89,10 @@ export class SellerProfileComponent implements OnInit {
     await this.ratingService.submitRating(
       this.sellerId(),
       user.uid,
-      this.selectedStar()
+      user.displayName ?? 'Usuario anónimo',
+      user.photoURL ?? undefined,
+      this.selectedStar(),
+      this.comment()
     );
 
     this.canRate.set(false);

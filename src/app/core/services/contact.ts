@@ -4,11 +4,14 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { CardPost, ContactRecord, TradeType } from '../models/site-config.model';
 import { AuthService } from './auth';
+import { ToastService } from './toast';
+import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 
 @Injectable({ providedIn: 'root' })
 export class ContactService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
+  private toastService = inject(ToastService);
   private router = inject(Router);
 
   /**
@@ -17,6 +20,11 @@ export class ContactService {
    */
   public handleContact(post: CardPost) {
     const user = this.authService.currentUser();
+
+    if (user && user.uid === post.userId) {
+      this.toastService.error('No podés contactarte con vos mismo.');
+      return;
+    }
 
     if (user) {
       // 1. Guardamos registro en el historial (Lead)

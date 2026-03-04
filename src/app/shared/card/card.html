@@ -101,19 +101,28 @@
           >
         }
       </div>
-      <button
-        (click)="handleContact(); $event.stopPropagation()"
-        class="h-9 w-9 bg-slate-900 dark:bg-slate-700 rounded-xl flex items-center justify-center text-white shadow-md hover:bg-blue-600 dark:hover:bg-blue-600 transition-all active:scale-90"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2.5"
-            d="M17 8l4 4m0 0l-4 4m4-4H3"
-          />
-        </svg>
-      </button>
+      @if (authService.currentUser()?.uid !== post().userId) {
+        <button
+          (click)="handleContact(); $event.stopPropagation()"
+          class="h-9 w-9 bg-slate-900 dark:bg-slate-700 rounded-xl flex items-center justify-center text-white shadow-md hover:bg-blue-600 dark:hover:bg-blue-600 transition-all active:scale-90"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.5"
+              d="M17 8l4 4m0 0l-4 4m4-4H3"
+            />
+          </svg>
+        </button>
+      } @else {
+        <div class="h-9 flex items-center">
+          <span
+            class="text-[8px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-widest"
+            >Tu Anuncio</span
+          >
+        </div>
+      }
     </div>
 
     <!-- Usuario + fecha -->

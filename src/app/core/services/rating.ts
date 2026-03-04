@@ -16,9 +16,26 @@ export class RatingService {
     return collectionData(q, { idField: 'id' }) as Observable<SellerRating[]>;
   }
 
-  async submitRating(sellerId: string, raterId: string, stars: number): Promise<void> {
+  async submitRating(
+    sellerId: string,
+    raterId: string,
+    raterName: string,
+    raterPhoto: string | undefined,
+    stars: number,
+    comment?: string,
+    verifiedContact: boolean = true
+  ): Promise<void> {
     const ref = collection(this.firestore, `ratings/${sellerId}/records`);
-    await addDoc(ref, { sellerId, raterId, stars, createdAt: new Date() });
+    await addDoc(ref, {
+      sellerId,
+      raterId,
+      raterName,
+      raterPhoto,
+      stars,
+      comment,
+      createdAt: new Date(),
+      verifiedContact
+    });
   }
 
   async hasRated(sellerId: string, raterId: string): Promise<boolean> {
