@@ -165,6 +165,8 @@ export interface CardPost {
   description: string;
   language: CardLanguage;
   rarity: CardRarity;
+  views?: number;          // Contador de vistas
+  whatsappClicks?: number; // Contador de clics en WhatsApp
 
   // --- CAMPOS NUEVOS PARA IMÁGENES ---
   imageUrl?: string;     // La URL pública para mostrar en la web (<img> src)

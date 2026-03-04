@@ -128,6 +128,70 @@
             </div>
           </div>
 
+          <!-- Estadísticas sociales -->
+          <div class="flex items-center gap-6 mb-10 px-2 opacity-60">
+            <div class="flex items-center gap-2 group/stat">
+              <div
+                class="h-8 w-8 rounded-full bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center transition-colors group-hover/stat:bg-blue-50 dark:group-hover/stat:bg-blue-900/20"
+              >
+                <svg
+                  class="w-4 h-4 text-slate-400 group-hover/stat:text-blue-500 transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+              </div>
+              <div class="flex flex-col leading-none">
+                <span class="text-[10px] font-black text-slate-800 dark:text-slate-200">{{
+                  card.views || 0
+                }}</span>
+                <span class="text-[7px] font-black text-slate-400 uppercase tracking-wider"
+                  >Vistas</span
+                >
+              </div>
+            </div>
+            <div class="flex items-center gap-2 group/stat">
+              <div
+                class="h-8 w-8 rounded-full bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center transition-colors group-hover/stat:bg-emerald-50 dark:group-hover/stat:bg-emerald-900/20"
+              >
+                <svg
+                  class="w-4 h-4 text-slate-400 group-hover/stat:text-emerald-500 transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <div class="flex flex-col leading-none">
+                <span class="text-[10px] font-black text-slate-800 dark:text-slate-200">{{
+                  card.whatsappClicks || 0
+                }}</span>
+                <span class="text-[7px] font-black text-slate-400 uppercase tracking-wider"
+                  >Interesados</span
+                >
+              </div>
+            </div>
+          </div>
+
           <div class="mb-10">
             <h2
               class="text-[10px] font-black text-slate-500 dark:text-slate-600 uppercase tracking-[0.2em] mb-4"

@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { Firestore, collection, collectionData, addDoc, deleteDoc, doc, query, orderBy, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -7,11 +7,14 @@ import { AuthService } from './auth';
 import { ToastService } from './toast';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 
+import { CardService } from './cardService';
+
 @Injectable({ providedIn: 'root' })
 export class ContactService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private cardService = inject(CardService);
   private router = inject(Router);
 
   /**
@@ -42,7 +45,8 @@ export class ContactService {
         wasContacted: false
       });
 
-      // 2. Disparamos WhatsApp
+      // 2. Disparamos WhatsApp e incrementamos contador
+      this.cardService.incrementWhatsappClicks(post.id);
       this.openWhatsApp(post);
     } else {
       // 3. Si no hay login, guardamos todo para después
@@ -83,7 +87,8 @@ export class ContactService {
         wasContacted: false
       });
 
-      // Disparamos WhatsApp (construyendo un post parcial para el método)
+      // Disparamos WhatsApp e incrementamos contador
+      this.cardService.incrementWhatsappClicks(pending.postId);
       this.openWhatsApp({
         whatsappContact: pending.phone,
         cardName: pending.cardName,

@@ -47,8 +47,14 @@ export class CardDetailComponent implements OnInit {
 
     this.post.set(foundPost);
 
-    if (foundPost?.userId) {
+    if (foundPost) {
       this.sellerRatings$ = this.ratingService.getRatings(foundPost.userId);
+
+      const user = this.authService.currentUser();
+      // Incrementar vistas si no es el dueño
+      if (foundPost.userId !== user?.uid) {
+        this.cardService.incrementViews(foundPost.id);
+      }
     }
 
     const user = this.authService.currentUser();

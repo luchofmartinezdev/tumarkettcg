@@ -8,7 +8,8 @@ import {
   deleteDoc,
   updateDoc,
   where,
-  query
+  query,
+  increment
 } from '@angular/fire/firestore';
 import { map, Observable, switchMap } from 'rxjs';
 import { CardPost } from '../models/site-config.model';
@@ -67,7 +68,9 @@ export class CardService {
       userName: currentUser.displayName || 'Usuario Anónimo',
       userEmail: currentUser.email,
       createdAt: new Date(),
-      active: true
+      active: true,
+      views: 0,
+      whatsappClicks: 0
     };
 
     try {
@@ -136,5 +139,14 @@ export class CardService {
       buyerName: buyerName || null,
       soldAt: new Date()
     });
+  }
+  async incrementViews(id: string) {
+    const docRef = doc(this.firestore, `${this.resolver.postsCollection()}/${id}`);
+    return updateDoc(docRef, { views: increment(1) });
+  }
+
+  async incrementWhatsappClicks(id: string) {
+    const docRef = doc(this.firestore, `${this.resolver.postsCollection()}/${id}`);
+    return updateDoc(docRef, { whatsappClicks: increment(1) });
   }
 }
