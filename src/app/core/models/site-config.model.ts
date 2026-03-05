@@ -132,6 +132,10 @@ export interface UserProfile {
   photoURL?: string;
   location?: string;        // ciudad/provincia opcional
   showLocation: boolean;    // el usuario elige si mostrarla
+  instagram?: string;       // link o usuario de instagram
+  twitter?: string;         // link o usuario de twitter (x)
+  facebook?: string;        // link o usuario de facebook
+  showSocialLinks: boolean; // si el usuario desea mostrar sus redes
   totalSales: number;       // ventas realizadas
   createdAt: Date;
 }

@@ -19,7 +19,7 @@ export class UserProfileService {
   async ensureProfile(user: any): Promise<void> {
     const ref = doc(this.firestore, `users/${user.uid}`);
     const snap = await getDoc(ref);
-    
+
     if (!snap.exists()) {
       const slug = generateSlug(user.displayName || 'usuario', user.uid);
       const initialProfile: UserProfile = {
@@ -29,6 +29,7 @@ export class UserProfileService {
         slug: slug,
         totalSales: 0,
         showLocation: false,
+        showSocialLinks: false,
         createdAt: new Date()
       };
       await setDoc(ref, initialProfile);
