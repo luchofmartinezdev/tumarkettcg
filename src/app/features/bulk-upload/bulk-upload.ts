@@ -2,7 +2,7 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardService } from '../../core/services/cardService';
-import { Franchise, TradeType, CardCondition, CardLanguage, Currency, CardPost } from '../../core/models/site-config.model';
+import { Franchise, TradeType, CardCondition, CardLanguage, Currency, CardPost, RARITIES_BY_FRANCHISE } from '../../core/models/site-config.model';
 import { Router, RouterModule } from '@angular/router';
 import { ToastService } from '../../core/services/toast';
 
@@ -33,6 +33,25 @@ export class BulkUploadComponent {
     public uploadTotal = signal(0);
 
     public TradeType = TradeType;
+
+    public currentRarities = computed(() => {
+        const f = this.globalFranchise();
+        return RARITIES_BY_FRANCHISE[f] || [];
+    });
+
+    public allowedConditions = [
+        { key: 'm / mint', label: 'Mint (Impecable)' },
+        { key: 'nm / near', label: 'Near Mint (Casi Nueva)' },
+        { key: 'lp / ex', label: 'Excellent (Excelente)' },
+        { key: 'mp / play', label: 'Played (Usada)' },
+        { key: 'hp / heavy', label: 'Heavy Played (Muy Usada)' }
+    ];
+
+    public allowedLanguages = [
+        { key: 'es', label: 'Español' },
+        { key: 'en / ing', label: 'Inglés' },
+        { key: 'jp', label: 'Japonés' }
+    ];
 
     public canSubmit = computed(() => this.parsedCards().length > 0 && this.globalWhatsApp().length >= 10);
 
