@@ -510,8 +510,10 @@
             Colección en Venta
           </h2>
 
-          <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4 xl:gap-6 transition-all">
-            @for (post of sellerPosts(); track post.id) {
+          <div
+            class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4 xl:gap-6 transition-all mb-8"
+          >
+            @for (post of paginatedPosts(); track post.id) {
               <app-card
                 [post]="post"
                 class="animate-in fade-in slide-in-from-bottom-4 duration-500"
@@ -542,6 +544,14 @@
               </div>
             }
           </div>
+
+          <app-paginator
+            [currentPage]="currentPage()"
+            [pageSize]="pageSize()"
+            [totalItems]="sellerPosts().length"
+            (pageChanged)="onPageChange($event)"
+            (pageSizeChanged)="onPageSizeChange($event)"
+          />
         </div>
       </div>
     } @else {

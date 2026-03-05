@@ -4,19 +4,20 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { CardService } from '../../core/services/cardService';
 import { AuthService } from '../../core/services/auth';
 import { RatingService } from '../../core/services/rating';
-import { CardPost, SellerRating, TradeType } from '../../core/models/site-config.model';
+import { CardPost, TradeType, UserProfile, SellerRating } from '../../core/models/site-config.model';
 import { StarRatingComponent } from '../../shared/star-rating/star-rating';
 import { CardComponent } from '../../shared/card/card';
 import { Observable, of } from 'rxjs';
 import { UserProfileService } from '../../core/services/user-profile';
 import { extractShortId } from '../../shared/utils/slug';
 import { FormsModule } from '@angular/forms';
-import { UserProfile } from '../../core/models/site-config.model';
+import { ContactService } from '../../core/services/contact';
+import { PaginatorComponent } from '../../shared/paginator/paginator';
 
 @Component({
   selector: 'app-seller-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, StarRatingComponent, CardComponent, FormsModule],
+  imports: [CommonModule, RouterModule, CardComponent, FormsModule, StarRatingComponent, PaginatorComponent],
   templateUrl: './seller-profile.html'
 })
 export class SellerProfileComponent implements OnInit {
@@ -49,6 +50,27 @@ export class SellerProfileComponent implements OnInit {
       p.userId === this.sellerId() && p.active
     )
   );
+
+  // Paginación
+  public currentPage = signal<number>(1);
+  public pageSize = signal<number>(12);
+
+  public paginatedPosts = computed(() => {
+    const all = this.sellerPosts();
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return all.slice(start, start + this.pageSize());
+  });
+
+  onPageChange(page: number) {
+    this.currentPage.set(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  onPageSizeChange(size: number) {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   async ngOnInit() {
     const slug = this.route.snapshot.paramMap.get('slug');

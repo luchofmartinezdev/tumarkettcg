@@ -95,10 +95,18 @@
 
       <!-- Vistas -->
       @if (viewMode() === 'grid') {
-        <app-card-grid [posts]="orderedPosts()"> </app-card-grid>
+        <app-card-grid [posts]="paginatedPosts()"> </app-card-grid>
       } @else {
-        <app-card-list [posts]="orderedPosts()"> </app-card-list>
+        <app-card-list [posts]="paginatedPosts()"> </app-card-list>
       }
+
+      <app-paginator
+        [currentPage]="currentPage()"
+        [pageSize]="pageSize()"
+        [totalItems]="orderedPosts().length"
+        (pageChanged)="onPageChange($event)"
+        (pageSizeChanged)="onPageSizeChange($event)"
+      />
     } @else {
       <!-- Término muy corto -->
       <div

@@ -9,11 +9,12 @@ import { SortBarComponent } from '../../shared/sort-bar/sort-bar';
 import { CardGridComponent } from '../../shared/card-grid/card-grid';
 import { CardListComponent } from '../../shared/card-list/card-list';
 import { FilterState, SidebarFiltersComponent } from '../../shared/sidebar-filters/sidebar-filters';
+import { PaginatorComponent } from '../../shared/paginator/paginator';
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardGridComponent, CardListComponent, SortBarComponent, SidebarFiltersComponent],
+  imports: [CommonModule, RouterModule, CardGridComponent, CardListComponent, SortBarComponent, SidebarFiltersComponent, PaginatorComponent],
   templateUrl: './catalog.html',
 })
 export class CatalogComponent implements OnInit {
@@ -32,6 +33,10 @@ export class CatalogComponent implements OnInit {
   public activeFilters = signal<FilterState | null>(null);
   public showFiltersMobile = signal<boolean>(false);
 
+  // Paginación
+  public currentPage = signal<number>(1);
+  public pageSize = signal<number>(24);
+
   ngOnInit() {
     this.contactService.checkPendingContact();
 
@@ -40,10 +45,6 @@ export class CatalogComponent implements OnInit {
         this.currentType.set(data['type'] as TradeType);
       }
     });
-  }
-
-  handleSort(option: SortOption) {
-    this.currentSort.set(option);
   }
 
   setViewMode(mode: 'grid' | 'list') {
@@ -86,9 +87,27 @@ export class CatalogComponent implements OnInit {
     return posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   });
 
+  paginatedPosts = computed(() => {
+    const all = this.orderedPosts();
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return all.slice(start, start + this.pageSize());
+  });
+
+  onPageChange(page: number) {
+    this.currentPage.set(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  onPageSizeChange(size: number) {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   updateSearch(event: Event) {
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
+    this.currentPage.set(1);
   }
 
   public activeFiltersCount = computed(() => {
@@ -105,5 +124,11 @@ export class CatalogComponent implements OnInit {
 
   handleFiltersChange(filters: FilterState) {
     this.activeFilters.set(filters);
+    this.currentPage.set(1);
+  }
+
+  handleSort(option: SortOption) {
+    this.currentSort.set(option);
+    this.currentPage.set(1);
   }
 }

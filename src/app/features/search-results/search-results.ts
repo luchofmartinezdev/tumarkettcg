@@ -8,11 +8,12 @@ import { SortBarComponent } from '../../shared/sort-bar/sort-bar';
 import { CardGridComponent } from '../../shared/card-grid/card-grid';
 import { CardListComponent } from '../../shared/card-list/card-list';
 import { Router } from '@angular/router';
+import { PaginatorComponent } from '../../shared/paginator/paginator';
 
 @Component({
   selector: 'app-search-results',
   standalone: true,
-  imports: [CommonModule, RouterModule, CardGridComponent, CardListComponent, SortBarComponent],
+  imports: [CommonModule, RouterModule, CardGridComponent, CardListComponent, SortBarComponent, PaginatorComponent],
   templateUrl: './search-results.html'
 })
 export class SearchResultsComponent implements OnInit {
@@ -27,15 +28,21 @@ export class SearchResultsComponent implements OnInit {
 
   public TradeType = TradeType;
 
+  // Paginación
+  public currentPage = signal<number>(1);
+  public pageSize = signal<number>(24);
+
   ngOnInit() {
     // Leemos el query param ?q= cada vez que cambia
     this.route.queryParams.subscribe(params => {
       this.searchTerm.set(params['q'] ?? '');
+      this.currentPage.set(1);
     });
   }
 
   handleSort(option: SortOption) {
     this.currentSort.set(option);
+    this.currentPage.set(1);
   }
 
   setViewMode(mode: 'grid' | 'list') {
@@ -61,6 +68,23 @@ export class SearchResultsComponent implements OnInit {
 
     return posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   });
+
+  paginatedPosts = computed(() => {
+    const all = this.orderedPosts();
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return all.slice(start, start + this.pageSize());
+  });
+
+  onPageChange(page: number) {
+    this.currentPage.set(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  onPageSizeChange(size: number) {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   handleContactClick(post: CardPost) {
     if (this.authService.currentUser()) {

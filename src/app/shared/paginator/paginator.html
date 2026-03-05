@@ -1,0 +1,101 @@
+@if (totalItems() > 0) {
+  <div
+    class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 mb-6 relative z-10 w-full"
+  >
+    <!-- Selección de cantidad por página -->
+    <div class="flex items-center gap-3">
+      <label
+        class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest"
+      >
+        Ver:
+      </label>
+      <div class="relative">
+        <select
+          [value]="pageSize()"
+          (change)="onPageSizeChange($event)"
+          class="appearance-none bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl pl-4 pr-10 py-2.5 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer transition-all shadow-sm"
+        >
+          @for (opt of pageSizeOptions(); track opt) {
+            <option [value]="opt">{{ opt }} por página</option>
+          }
+        </select>
+        <div
+          class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.5"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controles Numéricos de Paginación -->
+    @if (totalPages() > 1) {
+      <div class="flex items-center justify-center gap-2">
+        <button
+          (click)="prev()"
+          [disabled]="currentPage() === 1"
+          class="flex items-center justify-center w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 hover:text-blue-600 hover:border-blue-200 dark:hover:border-blue-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm"
+          aria-label="Página anterior"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.5"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-1.5 hidden sm:flex">
+          @for (page of pages(); track $index) {
+            @if (page === '...') {
+              <span class="px-2 text-slate-400 dark:text-slate-500 font-bold select-none">...</span>
+            } @else {
+              <button
+                (click)="onPageChange($any(page))"
+                [class]="
+                  currentPage() === page
+                    ? 'bg-blue-600 border-transparent text-white shadow-md shadow-blue-500/20'
+                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:border-blue-200 dark:hover:border-blue-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/20 shadow-sm'
+                "
+                class="flex items-center justify-center w-10 h-10 rounded-xl border font-black text-sm transition-all active:scale-95"
+              >
+                {{ page }}
+              </button>
+            }
+          }
+        </div>
+
+        <!-- Indicador para móviles en vez de todos los números -->
+        <div
+          class="flex sm:hidden items-center px-4 h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-black text-sm text-slate-600 dark:text-slate-300"
+        >
+          {{ currentPage() }} / {{ totalPages() }}
+        </div>
+
+        <button
+          (click)="next()"
+          [disabled]="currentPage() === totalPages()"
+          class="flex items-center justify-center w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 hover:text-blue-600 hover:border-blue-200 dark:hover:border-blue-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 shadow-sm"
+          aria-label="Página siguiente"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.5"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+      </div>
+    }
+  </div>
+}
