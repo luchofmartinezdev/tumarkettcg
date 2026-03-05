@@ -82,6 +82,24 @@ export class CardService {
     }
   }
 
+  async createBatchPosts(posts: Partial<CardPost>[]) {
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) throw new Error('Debes iniciar sesión.');
+
+    // Procesamos en serie para asegurar que los slugs se generen bien con el ID del doc
+    // (Podríamos usar writeBatch pero el slug depende del ID generado por addDoc)
+    const results = [];
+    for (const postData of posts) {
+      try {
+        const id = await this.createPost(postData);
+        results.push({ id, status: 'ok' });
+      } catch (e) {
+        results.push({ status: 'error', error: e });
+      }
+    }
+    return results;
+  }
+
   async updatePost(id: string, data: Partial<CardPost>) {
     const docRef = doc(this.firestore, `${this.resolver.postsCollection()}/${id}`);
     return updateDoc(docRef, data);
