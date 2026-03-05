@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Función helper para saber si el usuario está logueado
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Reglas para colecciones principales activas (asume que se pasa la configuración de DB mediante resolver, pero aplica a todas)
+    match /{collection}/{document=**} {
+      
+      // Permitir la lectura a cualquiera (para que el catálogo y búsquedas funcionen)
+      allow read: if true;
+      
+      // Permitir creación solo a usuarios autenticados
+      allow create: if isSignedIn();
+      
+      // Permitir actualización o eliminación SOLO si el documento pertenece al usuario que hace el request
+      // Compara el UID del token de Auth con el campo userId del documento
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid);
+    }
+  }
+}

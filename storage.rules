@@ -1,0 +1,24 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    match /{allPaths=**} {
+      // Cualquiera puede leer las imágenes
+      allow read: if true;
+      
+      // Solo usuarios autenticados pueden subir o eliminar archivos
+      // No hay dueño asociado al metadata actualmente, así que el requisito principal es estar auth.
+      // Se limita el tamaño del archivo a 5MB y el tipo a imágenes como seguridad adicional
+      allow write: if isSignedIn() 
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+                   
+      allow delete: if isSignedIn();
+    }
+  }
+}

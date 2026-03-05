@@ -101,11 +101,14 @@ export class CardService {
   }
 
   async updatePost(id: string, data: Partial<CardPost>) {
+    if (!this.authService.currentUser()) throw new Error('Debes iniciar sesión para actualizar.');
     const docRef = doc(this.firestore, `${this.resolver.postsCollection()}/${id}`);
     return updateDoc(docRef, data);
   }
 
   async deletePost(id: string, imagePath?: string) {
+    if (!this.authService.currentUser()) throw new Error('Debes iniciar sesión para eliminar una publicación.');
+
     if (imagePath) {
       try {
         const imageRef = ref(this.storage, imagePath);
@@ -120,6 +123,7 @@ export class CardService {
   }
 
   async toggleStatus(id: string, currentStatus: boolean) {
+    if (!this.authService.currentUser()) throw new Error('No autorizado.');
     const docRef = doc(this.firestore, `${this.resolver.postsCollection()}/${id}`);
     return updateDoc(docRef, { active: !currentStatus });
   }
@@ -133,6 +137,7 @@ export class CardService {
   }
 
   async uploadImage(file: File): Promise<{ url: string, path: string }> {
+    if (!this.authService.currentUser()) throw new Error('No autorizado para subir imágenes.');
     const filePath = `posts/${Date.now()}_${Math.random().toString(36).substring(2)}`;
     const fileRef = ref(this.storage, filePath);
 
@@ -147,6 +152,7 @@ export class CardService {
   }
 
   async markAsSold(id: string, buyerName?: string): Promise<void> {
+    if (!this.authService.currentUser()) throw new Error('No autorizado.');
     const docRef = doc(this.firestore, `${this.resolver.postsCollection()}/${id}`);
     await updateDoc(docRef, {
       isSold: true,
