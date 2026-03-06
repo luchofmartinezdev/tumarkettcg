@@ -39,12 +39,20 @@ export class UserProfileService {
   async saveProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
     const ref = doc(this.firestore, `users/${uid}`);
 
-    // Si viene un displayName nuevo, actualizamos el slug también
+    console.log('uid recibido:', uid);
+    console.log('ref path:', ref.path);
+
     if (data.displayName) {
       data.slug = generateSlug(data.displayName, uid);
     }
 
-    await updateDoc(ref, data);
+    try {
+      await setDoc(ref, data, { merge: true });
+      console.log('guardado ok');
+    } catch (e: any) {
+      console.error('error completo:', e.code, e.message);
+      throw e;
+    }
   }
 
   async getProfileBySlug(slug: string): Promise<UserProfile | null> {

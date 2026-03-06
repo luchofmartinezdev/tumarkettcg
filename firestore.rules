@@ -43,6 +43,11 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    } 
+    
+    match /config/{document} {
+      allow read: if true;
+      allow write: if false;
     }
   }
 }
