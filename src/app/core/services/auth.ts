@@ -11,12 +11,14 @@ export class AuthService {
 
   // Ahora guarda un User de Firebase de verdad
   public currentUser = signal<User | null>(null);
+  public authReady = signal<boolean>(false); // ← agregá esta línea
   private pendingContact: any = null;
 
   constructor() {
     // Esto es magia reactiva: Firebase nos avisa automáticamente si el usuario entra o sale
     authState(this.fireAuth).subscribe((user) => {
       this.currentUser.set(user);
+      this.authReady.set(true);
       if (user) {
         this.userProfileService.ensureProfile(user);
       }
