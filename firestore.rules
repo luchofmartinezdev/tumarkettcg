@@ -8,27 +8,41 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Reglas específicas para la colección de usuarios
+    // Perfiles de usuario
     match /users/{userId} {
       allow read: if true;
       allow write: if isSignedIn() && request.auth.uid == userId;
     }
 
-    // Reglas para colecciones principales activas (como cartas)
-    match /{collection}/{document=**} {
-      
-      // Permitir la lectura a cualquiera (para que el catálogo y búsquedas funcionen)
+    // Contactos - El usuario solo puede ver y editar sus propios contactos
+    match /contacts/{userId}/records/{recordId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Favoritos - El usuario solo puede ver y editar sus propios favoritos
+    match /favorites/{userId}/records/{recordId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Calificaciones - Cualquiera puede leer y crear, pero el autor actualiza
+    match /ratings/{sellerId}/records/{ratingId} {
       allow read: if true;
-      
-      // Permitir creación solo a usuarios autenticados
       allow create: if isSignedIn();
-      
-      // Permitir actualización o eliminación SOLO si el documento pertenece al usuario que hace el request
-      // Compara el UID del token de Auth con el campo userId o uid del documento
-      allow update, delete: if isSignedIn() && (
-        (resource.data.userId == request.auth.uid) || 
-        (resource.data.uid == request.auth.uid)
-      );
+      allow update, delete: if isSignedIn() && resource.data.raterId == request.auth.uid;
+    }
+
+    // Publicaciones
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // Publicaciones de prueba
+    match /posts_test/{postId} {
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
   }
 }
