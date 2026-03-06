@@ -39,16 +39,12 @@ export class UserProfileService {
   async saveProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
     const ref = doc(this.firestore, `users/${uid}`);
 
-    console.log('uid recibido:', uid);
-    console.log('ref path:', ref.path);
-
     if (data.displayName) {
       data.slug = generateSlug(data.displayName, uid);
     }
 
     try {
       await setDoc(ref, data, { merge: true });
-      console.log('guardado ok');
     } catch (e: any) {
       console.error('error completo:', e.code, e.message);
       throw e;
