@@ -25,6 +25,7 @@ export class Navbar {
   public searchTerm = signal('');
   public showResults = signal(false);
   public showUserMenu = signal(false);
+  public showPublishMenu = signal(false);
 
   public TradeType = TradeType;
 
@@ -43,10 +44,17 @@ export class Navbar {
     if (!target.closest('#user-menu-wrapper')) {
       this.showUserMenu.set(false);
     }
+    if (!target.closest('#publish-menu-wrapper')) {
+      this.showPublishMenu.set(false);
+    }
   }
 
   toggleUserMenu() {
     this.showUserMenu.update(v => !v);
+  }
+
+  togglePublishMenu() {
+    this.showPublishMenu.update(v => !v);
   }
 
   onSearchInput(term: string) {
@@ -73,6 +81,7 @@ export class Navbar {
 
   navigateTo(path: string) {
     this.showUserMenu.set(false);
+    this.showPublishMenu.set(false);
     this.router.navigate([path]);
   }
 
