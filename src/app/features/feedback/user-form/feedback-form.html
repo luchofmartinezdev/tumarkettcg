@@ -1,0 +1,66 @@
+<div class="min-h-screen bg-slate-50 dark:bg-slate-900 pt-28 pb-20 px-4">
+  <div class="max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="mb-12 text-center">
+      <h1 class="text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-4">
+        Danos tu <span class="text-blue-600">Opinión</span>
+      </h1>
+      <p class="text-slate-500 dark:text-slate-400 font-medium italic">
+        Tu feedback nos ayuda a construir la mejor plataforma de TCG.
+      </p>
+    </div>
+
+    <!-- Feedback Form Card -->
+    <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 md:p-12 border border-slate-100 dark:border-slate-700 shadow-2xl">
+      <div class="space-y-8">
+        <!-- Categoría -->
+        <div class="flex flex-col gap-3">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">¿De qué trata tu comentario?</label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            @for (cat of categories; track cat) {
+              <button 
+                (click)="category.set(cat)"
+                [class]="category() === cat ? 'bg-blue-600 text-white shadow-lg border-blue-600' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-700 text-slate-400 hover:border-blue-200'"
+                class="px-4 py-3 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all">
+                {{ cat }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Contenido -->
+        <div class="flex flex-col gap-3">
+          <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Tu mensaje</label>
+          <textarea 
+            [ngModel]="content()" 
+            (ngModelChange)="content.set($event)"
+            rows="6"
+            placeholder="Escribe aquí tus sugerencias, errores encontrados o comentarios que quieras hacernos llegar..."
+            class="w-full bg-slate-50 dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-700 rounded-[2rem] p-6 text-slate-700 dark:text-slate-200 text-sm font-medium focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/50 outline-none transition-all resize-none placeholder:text-slate-400"
+          ></textarea>
+        </div>
+
+        <!-- Botón Enviar -->
+        <button 
+          (click)="submit()"
+          [disabled]="isSubmitting() || !content().trim()"
+          class="w-full py-6 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-[2rem] text-[12px] font-black uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-4 shadow-2xl shadow-blue-500/20 active:scale-[0.98]"
+        >
+          @if (isSubmitting()) {
+            <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Enviando opinión...
+          } @else {
+            Enviar Feedback Ahora
+          }
+        </button>
+
+        <p class="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest italic pt-4">
+          Un administrador revisará tu mensaje y nos pondremos a trabajar si es necesario.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

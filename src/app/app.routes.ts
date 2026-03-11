@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
+import { adminGuard } from './core/guards/admin-guard';
 import { TradeType } from './core/models/site-config.model';
 
 export const routes: Routes = [
@@ -76,6 +77,15 @@ export const routes: Routes = [
     {
         path: 'vendedor/:slug',
         loadComponent: () => import('./features/seller-profile/seller-profile').then(m => m.SellerProfileComponent)
+    },
+    {
+        path: 'admin/feedback',
+        loadComponent: () => import('./features/feedback/feedback').then(m => m.FeedbackComponent),
+        canActivate: [adminGuard]
+    },
+    {
+        path: 'feedback',
+        loadComponent: () => import('./features/feedback/user-form/feedback-form').then(m => m.FeedbackFormComponent)
     },
     { path: '**', redirectTo: '' }
 ];

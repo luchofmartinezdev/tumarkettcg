@@ -29,6 +29,15 @@ export class Navbar {
 
   public TradeType = TradeType;
 
+  public isAdmin = computed(() => {
+    const user = this.authService.currentUser();
+    const ADMIN_EMAILS = [
+      'luchofmartinez.dev@gmail.com',
+      'kernelstudio.solutions@gmail.com'
+    ];
+    return !!(user && user.email && ADMIN_EMAILS.includes(user.email));
+  });
+
   public quickResults = computed(() => {
     const term = this.searchTerm().toLowerCase();
     if (term.length < 3) return [];

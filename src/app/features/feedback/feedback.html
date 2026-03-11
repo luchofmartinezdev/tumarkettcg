@@ -1,0 +1,100 @@
+<div class="min-h-screen bg-slate-50 dark:bg-slate-900 pt-28 pb-20 px-4">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div>
+        <h1 class="text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-4">
+          Panel de <span class="text-blue-600">Feedback</span>
+        </h1>
+        <p class="text-slate-500 dark:text-slate-400 font-medium italic">
+          Gestión de sugerencias y comentarios exclusivos del sistema (Acceso Restringido)
+        </p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-6 py-3 rounded-2xl shadow-sm">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Total recibidos</span>
+          <span class="text-2xl font-black text-blue-600 tracking-tight">{{ feedbacks().length }}</span>
+        </div>
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <div class="flex flex-col items-center justify-center py-20 gap-4">
+        <div class="w-12 h-12 border-4 border-slate-200 dark:border-slate-800 border-t-blue-600 rounded-full animate-spin"></div>
+        <span class="text-sm font-black text-slate-400 uppercase tracking-widest">Cargando comentarios...</span>
+      </div>
+    } @else {
+      @if (feedbacks().length === 0) {
+        <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] p-20 text-center border border-slate-100 dark:border-slate-700 shadow-xl">
+          <div class="h-24 w-24 bg-slate-50 dark:bg-slate-900 rounded-[2rem] flex items-center justify-center text-slate-300 mx-auto mb-8">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-3">No hay feedback aún</h3>
+          <p class="text-slate-400 font-medium italic">Es un buen momento para invitar a los usuarios a compartir su opinión.</p>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 gap-6">
+          @for (item of feedbacks(); track item.id) {
+            <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] p-8 border border-slate-100 dark:border-slate-700 shadow-xl hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-300 group">
+              <div class="flex flex-col md:flex-row justify-between gap-6">
+                <!-- Info del Usuario -->
+                <div class="flex items-start gap-4">
+                  <div class="h-14 w-14 rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center shrink-0 shadow-sm border border-blue-100 dark:border-blue-800/50">
+                    <span class="text-xl font-bold">{{ item.userName.charAt(0).toUpperCase() }}</span>
+                  </div>
+                  <div>
+                    <div class="flex items-center gap-3 mb-1">
+                      <h3 class="text-lg font-black text-slate-800 dark:text-white tracking-tight">{{ item.userName }}</h3>
+                      <span class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase px-2 py-0.5 border border-slate-100 dark:border-slate-700 rounded-md">ID: {{ item.userId | slice:0:8 }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 mb-4">
+                      <span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40 px-3 py-1 rounded-full uppercase tracking-widest">{{ item.category }}</span>
+                      <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500">{{ item.userEmail }}</span>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-300 font-medium leading-relaxed italic bg-slate-50/50 dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-50 dark:border-slate-700">
+                      "{{ item.content }}"
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Acciones y Status -->
+                <div class="flex flex-col justify-between items-end gap-6 shrink-0">
+                  <div class="flex flex-col items-end gap-2 text-right">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block">{{ item.createdAt.toDate() | date:'short' }}</span>
+                    <span [class]="getStatusClass(item.status)" class="text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm">
+                      {{ item.status === 'pending' ? 'Pendiente' : item.status === 'reviewed' ? 'En Revisión' : 'Resuelto' }}
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-2 p-1.5 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 opacity-0 group-hover:opacity-100 transition-all shadow-sm">
+                    <button (click)="updateStatus(item, 'pending')" 
+                      [class]="item.status === 'pending' ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-600' : 'text-slate-400 hover:text-slate-600'" 
+                      class="p-2.5 rounded-xl transition-all" title="Marcar Pendiente">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </button>
+                    <button (click)="updateStatus(item, 'reviewed')" 
+                      [class]="item.status === 'reviewed' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600' : 'text-slate-400 hover:text-slate-600'" 
+                      class="p-2.5 rounded-xl transition-all" title="Marcar en Revisión">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    </button>
+                    <button (click)="updateStatus(item, 'resolved')" 
+                      [class]="item.status === 'resolved' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600' : 'text-slate-400 hover:text-slate-600'" 
+                      class="p-2.5 rounded-xl transition-all" title="Marcar Resuelto">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
+                    </button>
+                    <div class="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+                    <button (click)="deleteFeedback(item.id)" class="p-2.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-all" title="Eliminar">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>
