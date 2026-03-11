@@ -68,12 +68,19 @@ export class CatalogComponent implements OnInit {
 
       if (!filters) return matchesType && matchesSearch;
 
-      const matchesPrice = (post.price ?? 0) <= filters.maxPrice;
+      const matchesPrice = this.currentType() === TradeType.VENDO 
+        ? (post.price ?? 0) <= filters.maxPrice
+        : true;
+        
       const matchesCondition = !filters.condition || post.condition === filters.condition;
       const matchesLanguage = !filters.language || post.language === filters.language;
       const matchesRarity = !filters.rarity || (post.rarity ?? '') === filters.rarity;
+      const matchesFranchise = !filters.franchise || post.franchise === filters.franchise;
+      const matchesSeries = !filters.series || post.seriesName === filters.series;
+      const matchesSet = !filters.set || post.setName === filters.set;
 
-      return matchesType && matchesSearch && matchesPrice && matchesCondition && matchesLanguage && matchesRarity;
+      return matchesType && matchesSearch && matchesPrice && matchesCondition && matchesLanguage && 
+             matchesRarity && matchesFranchise && matchesSeries && matchesSet;
     });
   });
 
@@ -114,11 +121,13 @@ export class CatalogComponent implements OnInit {
     const filters = this.activeFilters();
     if (!filters) return 0;
     let count = 0;
-    // El precio siempre tiene valor por defecto, así que solo contamos si es distinto al máximo inicial o si queremos ser estrictos
-    if (filters.maxPrice < 150000) count++;
+    if (this.currentType() === TradeType.VENDO && filters.maxPrice < 150000) count++;
     if (filters.condition) count++;
     if (filters.language) count++;
     if (filters.rarity) count++;
+    if (filters.franchise) count++;
+    if (filters.series) count++;
+    if (filters.set) count++;
     return count;
   });
 

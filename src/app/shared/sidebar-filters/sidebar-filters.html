@@ -10,6 +10,8 @@
       Limpiar
     </button>
   </div>
+
+  <!-- Presupuesto (Solo para Vendo) -->
   @if (showPriceFilter()) {
     <div
       class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm"
@@ -37,6 +39,118 @@
       />
     </div>
   }
+
+  <!-- Franquicia (Juego) -->
+  <div
+    class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm"
+  >
+    <h4
+      class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4"
+    >
+      Juego / Franquicia
+    </h4>
+    <div class="flex flex-wrap gap-2">
+      @for (f of franchises; track f) {
+        <button
+          (click)="toggleFranchise(f)"
+          [class]="
+            selectedFranchise() === f
+              ? 'bg-slate-900 dark:bg-blue-600 text-white border-slate-900 dark:border-blue-600 shadow-md'
+              : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500'
+          "
+          class="px-4 py-2 border rounded-full text-[9px] font-black uppercase transition-all"
+        >
+          {{ f }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Serie / Era (Solo si hay franquicia) -->
+  @if (availableSeries().length > 0) {
+    <div
+      class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm"
+    >
+      <h4
+        class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4"
+      >
+        Serie / Era
+      </h4>
+      <div class="flex flex-wrap gap-2">
+        @for (s of availableSeries(); track s.name) {
+          <button
+            (click)="toggleSeries(s.name)"
+            [class]="
+              selectedSeries() === s.name
+                ? 'bg-slate-900 dark:bg-blue-600 text-white border-slate-900 dark:border-blue-600 shadow-md'
+                : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500'
+            "
+            class="px-4 py-2 border rounded-full text-[9px] font-black uppercase transition-all"
+          >
+            {{ s.name }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Set / Expansión (Solo si hay serie) -->
+  @if (availableSets().length > 0) {
+    <div
+      class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm"
+    >
+      <h4
+        class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4"
+      >
+        Set / Expansión
+      </h4>
+      <div class="flex flex-wrap gap-2">
+        @for (set of availableSets(); track set.id) {
+          <button
+            (click)="toggleSet(set.name)"
+            [class]="
+              selectedSet() === set.name
+                ? 'bg-slate-900 dark:bg-blue-600 text-white border-slate-900 dark:border-blue-600 shadow-md'
+                : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500'
+            "
+            class="px-4 py-2 border rounded-full text-[9px] font-black uppercase transition-all"
+          >
+            {{ set.name }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Rareza (Dinámica) -->
+  @if (selectedFranchise()) {
+    <div
+      class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm"
+    >
+      <h4
+        class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4"
+      >
+        Rareza
+      </h4>
+      <div class="flex flex-wrap gap-2">
+        @for (r of availableRarities(); track r.value) {
+          <button
+            (click)="toggleRarity(r.label)"
+            [class]="
+              selectedRarity() === r.label
+                ? 'bg-slate-900 dark:bg-blue-600 text-white border-slate-900 dark:border-blue-600 shadow-md'
+                : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500'
+            "
+            class="px-4 py-2 border rounded-full text-[9px] font-black uppercase transition-all"
+          >
+            {{ r.label }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Estado -->
   <div
     class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm"
   >
@@ -62,57 +176,29 @@
     </div>
   </div>
 
+  <!-- Idioma -->
   <div
-    class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm space-y-8"
+    class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm"
   >
-    <div>
-      <h4
-        class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4"
-      >
-        Idioma
-      </h4>
-      <div class="flex flex-wrap gap-2">
-        @for (lang of languages; track lang) {
-          <button
-            (click)="toggleLanguage(lang)"
-            [class]="
-              selectedLanguage() === lang
-                ? 'bg-slate-900 dark:bg-blue-600 text-white border-slate-900 dark:border-blue-600 shadow-md'
-                : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500'
-            "
-            class="px-4 py-2 border rounded-full text-[9px] font-black uppercase transition-all"
-          >
-            {{ lang }}
-          </button>
-        }
-      </div>
-    </div>
-  </div>
-
-  <div
-    class="bg-white dark:bg-slate-800 p-6 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm space-y-8"
-  >
-    <div>
-      <h4
-        class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4"
-      >
-        Rareza
-      </h4>
-      <div class="flex flex-wrap gap-2">
-        @for (r of rarities; track r) {
-          <button
-            (click)="toggleRarity(r)"
-            [class]="
-              selectedRarity() === r
-                ? 'bg-slate-900 dark:bg-blue-600 text-white border-slate-900 dark:border-blue-600 shadow-md'
-                : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500'
-            "
-            class="px-4 py-2 border rounded-full text-[9px] font-black uppercase transition-all"
-          >
-            {{ r }}
-          </button>
-        }
-      </div>
+    <h4
+      class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4"
+    >
+      Idioma
+    </h4>
+    <div class="flex flex-wrap gap-2">
+      @for (lang of languages; track lang) {
+        <button
+          (click)="toggleLanguage(lang)"
+          [class]="
+            selectedLanguage() === lang
+              ? 'bg-slate-900 dark:bg-blue-600 text-white border-slate-900 dark:border-blue-600 shadow-md'
+              : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500'
+          "
+          class="px-4 py-2 border rounded-full text-[9px] font-black uppercase transition-all"
+        >
+          {{ lang }}
+        </button>
+      }
     </div>
   </div>
 </aside>
