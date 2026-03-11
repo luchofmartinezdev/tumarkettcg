@@ -17,6 +17,8 @@ import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angula
 import { CollectionResolverService } from './collection-resolver';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { generateSlug } from '../../shared/utils/slug';
+import { UserProfileService } from './user-profile';
+
 
 @Injectable({ providedIn: 'root' })
 export class CardService {
@@ -25,6 +27,7 @@ export class CardService {
   private storage = inject(Storage);
   private resolver = inject(CollectionResolverService);
   private destroyRef = inject(DestroyRef);
+  private userProfileService = inject(UserProfileService);
 
   private get postsCollection() {
     return collection(this.firestore, this.resolver.postsCollection());
@@ -61,11 +64,14 @@ export class CardService {
     const currentUser = this.authService.currentUser();
     if (!currentUser) throw new Error('Debes iniciar sesión para publicar una carta.');
 
+    const userProfile = await this.userProfileService.getProfile(currentUser.uid);
+
     const newPost = {
       ...postData,
       userId: currentUser.uid,
       userName: currentUser.displayName || 'Usuario Anónimo',
       userEmail: currentUser.email,
+      userSlug: userProfile?.slug ?? null,
       createdAt: new Date(),
       active: true
     };
@@ -74,7 +80,6 @@ export class CardService {
       const docRef = await addDoc(this.postsCollection, newPost);
       const slug = generateSlug(postData.cardName ?? 'carta', docRef.id);
       await updateDoc(docRef, { slug });
-
       return docRef.id;
     } catch (error) {
       console.error('Error al guardar en Firebase:', error);

@@ -10,11 +10,12 @@ import { FavoriteService } from '../../core/services/favorite';
 import { ContactService } from '../../core/services/contact'; // 👈 nuevo
 import { extractShortId } from '../../shared/utils/slug';
 import { Observable, of } from 'rxjs';
+import { Router, NavigationExtras } from '@angular/router'; // ← agregá
 
 @Component({
   selector: 'app-card-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, CurrencyPipe, StarRatingComponent],
+  imports: [CommonModule, RouterModule, StarRatingComponent],
   templateUrl: './card-detail.html'
 })
 export class CardDetailComponent implements OnInit {
@@ -25,13 +26,21 @@ export class CardDetailComponent implements OnInit {
   private favoriteService = inject(FavoriteService);
   public authService = inject(AuthService);
   private contactService = inject(ContactService); // 👈 nuevo
+  private router = inject(Router); // ← agregá
 
   public post = signal<CardPost | undefined>(undefined);
   public sellerRatings$: Observable<SellerRating[]> = of([]);
   public isFavorite = signal(false);
   public TradeType = TradeType;
 
-  goBack() { this.location.back(); }
+  goBack() {
+    const from = window.history.state?.from;
+    if (from) {
+      this.router.navigate([from]);
+    } else {
+      this.location.back();
+    }
+  }
 
   async ngOnInit() {
     this.contactService.checkPendingContact(); // 👈 unificado
@@ -86,4 +95,5 @@ export class CardDetailComponent implements OnInit {
       this.contactService.handleContact(p); // 👈 unificado
     }
   }
+
 }

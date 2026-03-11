@@ -48,7 +48,7 @@ export class CardFormComponent implements OnInit {
     userName: [{ value: '', disabled: true }, [Validators.required]],
     cardName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(40)]],
     franchise: ['', [Validators.required]],
-    price: [null as number | null, [Validators.required, Validators.min(1), Validators.max(9999999)]],
+    price: [null as number | null, [Validators.required, Validators.min(0.01), Validators.max(9999999)]],
     currency: [Currency.ARS, [Validators.required]],
     condition: ['', [Validators.required]],
     language: ['', [Validators.required]],
@@ -247,8 +247,16 @@ export class CardFormComponent implements OnInit {
 
   onPriceInput(event: any) {
     const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/[^0-9]/g, '');
-    this.cardForm.patchValue({ price: value ? parseInt(value, 10) : null }, { emitEvent: false });
+    let value = input.value.replace(/[^0-9.]/g, ''); // ← permite el punto
+
+    // Evitar múltiples puntos decimales
+    const parts = value.split('.');
+    if (parts.length > 2) {
+      value = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    const parsed = value ? parseFloat(value) : null; // ← parseFloat en lugar de parseInt
+    this.cardForm.patchValue({ price: parsed }, { emitEvent: false });
     input.value = value;
   }
 }

@@ -118,7 +118,7 @@
                           "
                           class="text-sm font-black transition-colors"
                         >
-                          {{ post.price | currency: post.currency || 'ARS' : 'symbol' : '1.0-0' }}
+                          {{ post.price | currency: post.currency || 'ARS' : 'symbol' : '1.2-2' }}
                         </span>
                         <span
                           class="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest opacity-60"
@@ -257,7 +257,11 @@
                       "
                       class="text-lg font-black transition-colors"
                     >
-                      {{ post.price | currency: post.currency || 'ARS' : 'symbol' : '1.0-0' }}
+                      {{
+                        post.price
+                          ? (post.price | currency: post.currency || 'ARS' : 'symbol' : '1.2-2')
+                          : 'A convenir'
+                      }}
                     </span>
                     <span
                       class="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest opacity-60"

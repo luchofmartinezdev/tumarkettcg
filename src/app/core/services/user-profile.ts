@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import {
   Firestore, collection, doc, getDoc, getDocs, query, setDoc, updateDoc,
-  where
+  where, getDocFromServer
 } from '@angular/fire/firestore';
 import { UserProfile } from '../models/site-config.model';
 import { generateSlug } from '../../shared/utils/slug';
@@ -18,7 +18,7 @@ export class UserProfileService {
 
   async ensureProfile(user: any): Promise<void> {
     const ref = doc(this.firestore, `users/${user.uid}`);
-    const snap = await getDoc(ref);
+    const snap = await getDocFromServer(ref);
 
     if (!snap.exists()) {
       const slug = generateSlug(user.displayName || 'usuario', user.uid);
@@ -26,10 +26,14 @@ export class UserProfileService {
         uid: user.uid,
         displayName: user.displayName || 'Usuario Anónimo',
         photoURL: user.photoURL || '',
-        slug: slug,
-        totalSales: 0,
+        slug,
+        location: '',
         showLocation: false,
+        instagram: '',
+        twitter: '',
+        facebook: '',
         showSocialLinks: false,
+        totalSales: 0,
         createdAt: new Date()
       };
       await setDoc(ref, initialProfile);
@@ -53,6 +57,7 @@ export class UserProfileService {
 
   async getProfileBySlug(slug: string): Promise<UserProfile | null> {
     const ref = collection(this.firestore, 'users');
+
     const q = query(ref, where('slug', '==', slug));
     const snap = await getDocs(q);
     if (snap.empty) return null;

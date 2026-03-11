@@ -30,7 +30,6 @@ export class AuthService {
       const provider = new GoogleAuthProvider();
       // Esto abre la ventanita clásica de "Elegir cuenta de Google"
       const result = await signInWithPopup(this.fireAuth, provider);
-
       await this.userProfileService.ensureProfile(result.user);
       this.router.navigate(['/']);
     } catch (error) {

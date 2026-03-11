@@ -1,10 +1,11 @@
 import { Component, inject, input, output, signal, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { CardPost, TradeType } from '../../core/models/site-config.model';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FavoriteService } from '../../core/services/favorite';
 import { AuthService } from '../../core/services/auth';
 import { ContactService } from '../../core/services/contact'; // 👈 nuevo
+
 
 @Component({
   selector: 'app-card',
@@ -21,6 +22,7 @@ export class CardComponent implements OnInit {
   private favoriteService = inject(FavoriteService);
   public authService = inject(AuthService);
   private contactService = inject(ContactService); // 👈 nuevo
+  private router = inject(Router); // 👈 nuevo
 
   async ngOnInit() {
     const user = this.authService.currentUser();
@@ -49,5 +51,11 @@ export class CardComponent implements OnInit {
       });
       this.isFavorite.set(true);
     }
+  }
+
+  navigateToCard() {
+    this.router.navigate(['/card', this.post().slug || this.post().id], {
+      state: { from: this.router.url }
+    });
   }
 }
