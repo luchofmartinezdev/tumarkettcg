@@ -4,10 +4,7 @@ import { AuthService } from '../services/auth';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, map, take } from 'rxjs';
 
-const ADMIN_EMAILS = [
-  'luchofmartinez.dev@gmail.com',
-  'kernelstudio.solutions@gmail.com'
-];
+import { ADMIN_EMAILS } from '../constants/auth';
 
 export const adminGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);

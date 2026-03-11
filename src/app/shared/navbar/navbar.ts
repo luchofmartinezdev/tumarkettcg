@@ -4,6 +4,7 @@ import { AuthService } from '../../core/services/auth';
 import { CardService } from '../../core/services/cardService';
 import { TradeType } from '../../core/models/site-config.model';
 import { ThemeService } from '../../core/services/theme';
+import { ADMIN_EMAILS } from '../../core/constants/auth';
 
 import { CommonModule } from '@angular/common';
 
@@ -31,10 +32,6 @@ export class Navbar {
 
   public isAdmin = computed(() => {
     const user = this.authService.currentUser();
-    const ADMIN_EMAILS = [
-      'luchofmartinez.dev@gmail.com',
-      'kernelstudio.solutions@gmail.com'
-    ];
     return !!(user && user.email && ADMIN_EMAILS.includes(user.email));
   });
 

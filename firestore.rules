@@ -3,9 +3,15 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Función helper para saber si el usuario está logueado
+    // Helpers
     function isSignedIn() {
       return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && 
+        (request.auth.token.email == 'luchofmartinez.dev@gmail.com' || 
+         request.auth.token.email == 'kernelstudio.solutions@gmail.com');
     }
 
     // Perfiles de usuario
@@ -14,40 +20,48 @@ service cloud.firestore {
       allow write: if isSignedIn() && request.auth.uid == userId;
     }
 
-    // Contactos - El usuario solo puede ver y editar sus propios contactos
+    // Contactos
     match /contacts/{userId}/records/{recordId} {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
-    // Favoritos - El usuario solo puede ver y editar sus propios favoritos
+    // Favoritos
     match /favorites/{userId}/records/{recordId} {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
-    // Calificaciones - Cualquiera puede leer y crear, pero el autor actualiza
+    // Calificaciones
     match /ratings/{sellerId}/records/{ratingId} {
       allow read: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn() && resource.data.raterId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.raterId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (resource.data.raterId == request.auth.uid || isAdmin());
     }
 
     // Publicaciones
     match /posts/{postId} {
       allow read: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
     // Publicaciones de prueba
     match /posts_test/{postId} {
       allow read: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
     } 
     
+    // Feedback de Usuarios
+    match /user_feedbacks/{id} {
+      allow create: if isSignedIn() && 
+                      request.resource.data.userId == request.auth.uid &&
+                      request.resource.data.status == 'pending';
+      allow read, update, delete: if isAdmin();
+    }
+
     match /config/{document} {
       allow read: if true;
-      allow write: if false;
+      allow write: if isAdmin();
     }
   }
 }
