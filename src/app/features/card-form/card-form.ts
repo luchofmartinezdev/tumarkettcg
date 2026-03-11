@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CardCondition, CardLanguage, Franchise, TradeType, RARITIES_BY_FRANCHISE, RarityOption, Currency } from '../../core/models/site-config.model';
+import { CardCondition, CardLanguage, Franchise, TradeType, RARITIES_BY_FRANCHISE, RarityOption, Currency, SETS_BY_FRANCHISE, SETS_BY_FRANCHISE_JP, SetOption, SeriesOption } from '../../core/models/site-config.model';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth';
 import { CardService } from '../../core/services/cardService';
@@ -41,8 +41,13 @@ export class CardFormComponent implements OnInit {
   public franchises = Object.values(Franchise);
   public languages = Object.values(CardLanguage);
   public currencies = Object.values(Currency);
+  
   availableRarities: RarityOption[] = [];
+  availableSeries: SeriesOption[] = [];
+  availableSets: SetOption[] = [];
   rarities: string[] = [];
+  seriesNames: string[] = [];
+  setNames: string[] = [];
 
   cardForm = this.fb.group({
     userName: [{ value: '', disabled: true }, [Validators.required]],
@@ -53,6 +58,9 @@ export class CardFormComponent implements OnInit {
     condition: ['', [Validators.required]],
     language: ['', [Validators.required]],
     rarity: ['', [Validators.required]],
+    seriesName: [''],
+    setName: [''],
+    cardNumber: [''],
     type: [TradeType.VENDO, [Validators.required]],
     whatsappContact: ['', [
       Validators.required,
@@ -69,40 +77,72 @@ export class CardFormComponent implements OnInit {
       this.cardForm.patchValue({ userName: user.displayName });
     }
 
-    // 1. Escuchar cambios en la franquicia para actualizar rarezas
-    this.setupFranchiseListener();
+    // 1. Escuchar cambios en la franquicia o idioma
+    this.setupFranchiseAndLanguageListeners();
 
-    // 2. Tu listener existente para Vendo/Busco
+    // 2. Escuchar cambios en la serie para filtrar sets
+    this.setupSeriesListener();
+
+    // 3. Listener para Vendo/Busco
     this.setupTypeListener();
 
-    // 3. Cargar datos si es edición
+    // 4. Cargar datos si es edición
     const slug = this.route.snapshot.paramMap.get('slug');
     if (slug) {
       this.prepareEditMode(slug);
+    } else {
+      // Valor por defecto para activar el catálogo inicial
+      if (!this.cardForm.get('language')?.value) {
+        this.cardForm.patchValue({ language: CardLanguage.ES });
+      }
     }
   }
 
-  // Nuevo método para manejar el cambio de Franquicia
-  private setupFranchiseListener() {
-    this.cardForm.get('franchise')?.valueChanges.subscribe((selectedFranchise) => {
-      // Usamos una guardia para asegurar que selectedFranchise sea del tipo Franchise
-      const franchise = selectedFranchise as Franchise;
+  // Nuevo método para manejar el cambio de Franquicia o Idioma
+  private setupFranchiseAndLanguageListeners() {
+    // Escuchamos ambos campos para actualizar el catálogo de sets disponible
+    this.cardForm.get('franchise')?.valueChanges.subscribe(() => this.updateAvailableCatalog());
+    this.cardForm.get('language')?.valueChanges.subscribe(() => this.updateAvailableCatalog());
+  }
 
-      if (franchise && RARITIES_BY_FRANCHISE[franchise]) {
-        // 1. Actualizamos la lista de opciones
-        this.rarities = RARITIES_BY_FRANCHISE[franchise].map(r => r.label);
+  private updateAvailableCatalog() {
+    const franchise = this.cardForm.get('franchise')?.value as Franchise;
+    const language = this.cardForm.get('language')?.value as CardLanguage;
 
-        // 2. Verificamos la rareza actual con un fallback de string vacío
-        // Usamos || '' para asegurar que currentRarity sea un string y no null/undefined
-        const currentRarity = this.cardForm.get('rarity')?.value || '';
+    if (franchise) {
+      // 1. Rarezas (siempre del mapa internacional por ahora o el común)
+      this.rarities = RARITIES_BY_FRANCHISE[franchise]?.map(r => r.label) || [];
 
-        if (!this.rarities.includes(currentRarity)) {
-          this.cardForm.get('rarity')?.setValue('');
+      // 2. SERIES (Seleccionamos el mapa según el idioma)
+      const catalog = (language === CardLanguage.JP) ? SETS_BY_FRANCHISE_JP : SETS_BY_FRANCHISE;
+      this.availableSeries = catalog[franchise] || [];
+      this.seriesNames = this.availableSeries.map(s => s.name);
+
+      // Resetear campos dependientes para evitar incoherencias
+      this.cardForm.get('rarity')?.setValue('', { emitEvent: false });
+      this.cardForm.get('seriesName')?.setValue('', { emitEvent: false });
+      this.cardForm.get('setName')?.setValue('', { emitEvent: false });
+      this.cardForm.get('cardNumber')?.setValue('', { emitEvent: false });
+    } else {
+      this.rarities = [];
+      this.seriesNames = [];
+      this.setNames = [];
+    }
+  }
+
+  // Nuevo listener para cuando cambia la serie
+  private setupSeriesListener() {
+    this.cardForm.get('seriesName')?.valueChanges.subscribe((selectedSeriesName) => {
+      if (selectedSeriesName) {
+        const foundSeries = this.availableSeries.find(s => s.name === selectedSeriesName);
+        if (foundSeries) {
+          this.availableSets = foundSeries.sets;
+          this.setNames = this.availableSets.map(s => `${s.id} - ${s.name}`);
         }
       } else {
-        this.rarities = [];
-        this.cardForm.get('rarity')?.setValue('');
+        this.setNames = [];
       }
+      this.cardForm.get('setName')?.setValue('');
     });
   }
 
@@ -124,9 +164,12 @@ export class CardFormComponent implements OnInit {
   onFranchiseChange(event: any) {
     const selectedFranchise = event.target.value as Franchise;
     this.availableRarities = RARITIES_BY_FRANCHISE[selectedFranchise] || [];
+    this.availableSeries = SETS_BY_FRANCHISE[selectedFranchise] || [];
 
-    // Limpiamos el valor de rareza previo para que el usuario elija uno válido para el nuevo juego
+    // Limpiamos los valores previos
     this.cardForm.get('rarity')?.setValue('');
+    this.cardForm.get('seriesName')?.setValue('');
+    this.cardForm.get('setName')?.setValue('');
   }
 
   private setupTypeListener() {
@@ -199,7 +242,6 @@ export class CardFormComponent implements OnInit {
       this.isLoading = true; // Empieza la carga
       const val = this.cardForm.getRawValue();
 
-      // 1. Objeto base de la publicación
       const postData: any = {
         cardName: val.cardName,
         franchise: val.franchise,
@@ -211,11 +253,21 @@ export class CardFormComponent implements OnInit {
         type: val.type,
         whatsappContact: val.whatsappContact,
         description: val.description || '',
+        seriesName: val.seriesName || '',
         active: true,
-        userId: user.uid, // Ya lo dejamos firme acá
+        userId: user.uid,
         userName: user.displayName,
-
+        cardNumber: val.cardNumber || '',
       };
+
+      // Procesar Set (si viene del dropdown con formato 'ID - Nombre')
+      if (val.setName && val.setName.includes(' - ')) {
+        const parts = val.setName.split(' - ');
+        postData.setCode = parts[0];
+        postData.setName = parts[1];
+      } else {
+        postData.setName = val.setName;
+      }
 
       try {
         if (this.selectedFile) {

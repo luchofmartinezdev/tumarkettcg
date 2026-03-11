@@ -116,7 +116,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <app-dropdown
-            label="Franquicia *"
+            label="Juego / Franquicia *"
             [options]="franchises"
             placeholder="Ej: Pokémon"
             formControlName="franchise"
@@ -125,16 +125,56 @@
             "
           >
           </app-dropdown>
-          @if (cardForm.get('franchise')?.invalid && cardForm.get('franchise')?.touched) {
-            <span
-              class="text-[10px] text-red-500 font-bold ml-4 animate-in fade-in slide-in-from-top-1"
-            >
-              Debes seleccionar una franquicia
-            </span>
-          }
 
           <app-dropdown
-            label="Rareza *"
+            label="Idioma de la carta *"
+            [options]="languages"
+            placeholder="Seleccionar idioma"
+            formControlName="language"
+            [class.border-red-500]="
+              cardForm.get('language')?.invalid && cardForm.get('language')?.touched
+            "
+          >
+          </app-dropdown>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex flex-col gap-2">
+            <app-dropdown
+              label="Serie / Era"
+              [options]="seriesNames"
+              placeholder="Ej: Scarlet & Violet (JP)"
+              formControlName="seriesName"
+            >
+            </app-dropdown>
+          </div>
+          
+          <div class="flex flex-col gap-2">
+            <app-dropdown
+              label="Set / Expansión"
+              [options]="setNames"
+              placeholder="Ej: SV8a - Terastal Festival"
+              formControlName="setName"
+            >
+            </app-dropdown>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="flex flex-col gap-2">
+              <label class="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-4">
+                Serie / Número
+              </label>
+              <input 
+                formControlName="cardNumber"
+                type="text"
+                placeholder="Ej: 151/204"
+                class="w-full bg-slate-50 dark:bg-slate-900/50 border-none rounded-2xl px-6 py-4 text-sm font-bold dark:text-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+              />
+          </div>
+
+          <app-dropdown
+            label="Rareza de la carta *"
             [options]="rarities"
             placeholder="Seleccionar rareza"
             formControlName="rarity"
@@ -143,14 +183,29 @@
             "
           >
           </app-dropdown>
-          @if (cardForm.get('rarity')?.invalid && cardForm.get('rarity')?.touched) {
-            <span
-              class="text-[10px] text-red-500 font-bold ml-4 animate-in fade-in slide-in-from-top-1"
-            >
-              La rareza es obligatoria
-            </span>
-          }
         </div>
+
+        @if ((cardForm.get('franchise')?.invalid && cardForm.get('franchise')?.touched) || 
+             (cardForm.get('language')?.invalid && cardForm.get('language')?.touched) ||
+             (cardForm.get('rarity')?.invalid && cardForm.get('rarity')?.touched)) {
+          <div class="flex flex-col gap-1 ml-4 -mt-4">
+            @if (cardForm.get('franchise')?.invalid && cardForm.get('franchise')?.touched) {
+              <span class="text-[10px] text-red-500 font-bold animate-in fade-in slide-in-from-top-1">
+                Debes seleccionar un juego
+              </span>
+            }
+            @if (cardForm.get('language')?.invalid && cardForm.get('language')?.touched) {
+              <span class="text-[10px] text-red-500 font-bold animate-in fade-in slide-in-from-top-1">
+                Debes seleccionar un idioma
+              </span>
+            }
+            @if (cardForm.get('rarity')?.invalid && cardForm.get('rarity')?.touched) {
+              <span class="text-[10px] text-red-500 font-bold animate-in fade-in slide-in-from-top-1">
+                La rareza es obligatoria
+              </span>
+            }
+          </div>
+        }
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="flex flex-col gap-2">
@@ -236,40 +291,25 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
-          <app-dropdown
-            label="Idioma de la carta *"
-            [options]="languages"
-            placeholder="Seleccionar idioma"
-            formControlName="language"
-            [class.border-red-500]="
-              cardForm.get('language')?.invalid && cardForm.get('language')?.touched
-            "
-          >
-          </app-dropdown>
-          @if (cardForm.get('language')?.invalid && cardForm.get('language')?.touched) {
-            <span
-              class="text-[10px] text-red-500 font-bold ml-4 animate-in fade-in slide-in-from-top-1"
+          <div class="flex flex-col gap-2">
+            <app-dropdown
+              label="Estado *"
+              [options]="conditions"
+              placeholder="Ej: Near Mint"
+              formControlName="condition"
+              [class.border-red-500]="
+                cardForm.get('condition')?.invalid && cardForm.get('condition')?.touched
+              "
             >
-              Debes seleccionar un idioma
-            </span>
-          }
-          <app-dropdown
-            label="Estado *"
-            [options]="conditions"
-            placeholder="Ej: Near Mint"
-            formControlName="condition"
-            [class.border-red-500]="
-              cardForm.get('condition')?.invalid && cardForm.get('condition')?.touched
-            "
-          >
-          </app-dropdown>
-          @if (cardForm.get('condition')?.invalid && cardForm.get('condition')?.touched) {
-            <span
-              class="text-[10px] text-red-500 font-bold ml-4 animate-in fade-in slide-in-from-top-1"
-            >
-              Debes seleccionar un estado
-            </span>
-          }
+            </app-dropdown>
+            @if (cardForm.get('condition')?.invalid && cardForm.get('condition')?.touched) {
+              <span
+                class="text-[10px] text-red-500 font-bold ml-4 animate-in fade-in slide-in-from-top-1"
+              >
+                Debes seleccionar un estado
+              </span>
+            }
+          </div>
         </div>
 
         <div class="flex flex-col gap-2">

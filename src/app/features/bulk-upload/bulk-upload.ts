@@ -2,7 +2,7 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CardService } from '../../core/services/cardService';
-import { Franchise, TradeType, CardCondition, CardLanguage, Currency, CardPost, RARITIES_BY_FRANCHISE } from '../../core/models/site-config.model';
+import { Franchise, TradeType, CardCondition, CardLanguage, Currency, CardPost, RARITIES_BY_FRANCHISE, SETS_BY_FRANCHISE, SETS_BY_FRANCHISE_JP } from '../../core/models/site-config.model';
 import { Router, RouterModule } from '@angular/router';
 import { ToastService } from '../../core/services/toast';
 
@@ -23,6 +23,7 @@ export class BulkUploadComponent {
     public globalWhatsApp = signal('');
     public globalType = signal<TradeType>(TradeType.VENDO);
     public globalFranchise = signal<Franchise>(Franchise.POKEMON);
+    public globalLanguage = signal<CardLanguage>(CardLanguage.ES);
 
     public franchises = Object.values(Franchise);
 
@@ -37,6 +38,15 @@ export class BulkUploadComponent {
     public currentRarities = computed(() => {
         const f = this.globalFranchise();
         return RARITIES_BY_FRANCHISE[f] || [];
+    });
+
+    public currentSets = computed(() => {
+        const f = this.globalFranchise();
+        const l = this.globalLanguage();
+        const catalog = (l === CardLanguage.JP) ? SETS_BY_FRANCHISE_JP : SETS_BY_FRANCHISE;
+        const series = catalog[f] || [];
+        // Aplanamos todas las series para obtener una lista única de sets para búsqueda/plantilla
+        return series.flatMap(s => s.sets);
     });
 
     public allowedConditions = [
@@ -99,6 +109,24 @@ export class BulkUploadComponent {
                 if (header.includes('estado')) card.condition = this.mapCondition(val);
                 if (header.includes('idioma')) card.language = this.mapLanguage(val);
                 if (header.includes('foto')) card.photoName = val;
+                if (header.includes('set')) {
+                    const cardLang = card.language || CardLanguage.ES;
+                    const catalog = (cardLang === CardLanguage.JP) ? SETS_BY_FRANCHISE_JP : SETS_BY_FRANCHISE;
+                    const franchiseCatalog = catalog[this.globalFranchise()] || [];
+                    const flatSets = franchiseCatalog.flatMap(s => s.sets);
+
+                    const foundSet = flatSets.find(s => 
+                        s.id.toLowerCase() === val.toLowerCase() || 
+                        s.name.toLowerCase().includes(val.toLowerCase())
+                    );
+                    if (foundSet) {
+                        card.setName = foundSet.name;
+                        card.setCode = foundSet.id;
+                    } else {
+                        card.setName = val; // Fallback al nombre literal
+                    }
+                }
+                if (header.includes('numero') || header.includes('num')) card.cardNumber = val;
             });
 
             if (card.cardName) {
@@ -191,7 +219,10 @@ export class BulkUploadComponent {
                     currency: card.currency || Currency.ARS,
                     description: card.description || 'Publicado masivamente',
                     imageUrl: imageUrl || undefined,
-                    imagePath: imagePath || undefined
+                    imagePath: imagePath || undefined,
+                    setName: card.setName,
+                    setCode: card.setCode,
+                    cardNumber: card.cardNumber
                 });
 
                 this.uploadProgress.update(v => v + 1);
@@ -212,8 +243,11 @@ export class BulkUploadComponent {
     downloadTemplate() {
         const franchise = this.globalFranchise();
         const type = this.globalType();
+        const lang = this.globalLanguage();
         const rarities = RARITIES_BY_FRANCHISE[franchise] || [];
-        const raritiesInfo = rarities.map(r => `${r.value}=${r.label}`).join(' | ');
+        const raritiesInfo = rarities.slice(0, 10).map(r => `${r.value}`).join(' | ');
+        const sets = this.currentSets();
+        const setsInfo = sets.slice(0, 8).map(s => `${s.id}`).join(', ') + '...';
 
         // Construimos el contenido línea por línea en un array
         const lines: string[] = [];
@@ -221,7 +255,9 @@ export class BulkUploadComponent {
         // 1. Comentarios de instrucción
         lines.push(`# PLANTILLA PARA: ${type.toUpperCase()}`);
         lines.push(`# FRANQUICIA: ${franchise}`);
-        lines.push(`# RAREZAS DISPONIBLES: ${raritiesInfo}`);
+        lines.push(`# IDIOMA BASE: ${lang}`);
+        lines.push(`# RAREZAS SUGERIDAS: ${raritiesInfo}`);
+        lines.push(`# SETS SUGERIDOS (${lang}): ${setsInfo}`);
         lines.push(`# ESTADOS: Mint | Near Mint | Excellent | Played | Heavy Played`);
         lines.push(`# IDIOMAS: ES (Español) | EN (Inglés) | JP (Japonés)`);
 
@@ -230,11 +266,11 @@ export class BulkUploadComponent {
 
         if (type === TradeType.VENDO) {
             lines.push(`# MONEDAS: ARS | USD`);
-            headers = 'Nombre,Precio,Moneda,Rareza,Estado,Idioma,Foto';
-            example = `Charizard VMAX,15000,ARS,${rarities[0]?.value || 'RARE'},Near Mint,ES,charizard.jpg`;
+            headers = 'Nombre,Set,Numero,Precio,Moneda,Rareza,Estado,Idioma,Foto';
+            example = `Charizard VMAX,SSP,185/191,15000,ARS,ULTRA_RARE,Near Mint,ES,charizard.jpg`;
         } else {
-            headers = 'Nombre,Rareza,Estado,Idioma,Foto';
-            example = `Charizard VMAX,${rarities[0]?.value || 'RARE'},Near Mint,ES,charizard.jpg`;
+            headers = 'Nombre,Set,Numero,Rareza,Estado,Idioma,Foto';
+            example = `Charizard VMAX,SSP,185/191,ULTRA_RARE,Near Mint,ES,charizard.jpg`;
         }
 
         // 2. Encabezados y ejemplo
