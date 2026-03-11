@@ -72,30 +72,33 @@ export class BulkUploadComponent {
     }
 
     private parseCSV(text: string) {
-        const lines = text.split('\n');
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+        // Filtramos las líneas que no son comentarios y no están vacías
+        const allLines = text.split('\n').map(l => l.trim());
+        const dataLines = allLines.filter(line => line && !line.startsWith('#'));
 
-        // Formato esperado: nombre, precio, rareza, estado, idioma, foto
+        if (dataLines.length < 1) return;
+
+        const headers = dataLines[0].split(',').map(h => h.trim().toLowerCase());
         const cards: Partial<CardPost>[] = [];
 
-        for (let i = 1; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (!line) continue;
-
+        for (let i = 1; i < dataLines.length; i++) {
+            const line = dataLines[i];
             const values = line.split(',').map(v => v.trim());
             const card: any = {
-                franchise: this.globalFranchise() // Usamos la global
+                franchise: this.globalFranchise()
             };
 
             headers.forEach((header, index) => {
                 const val = values[index];
+                if (!val) return;
+
                 if (header.includes('nombre')) card.cardName = val;
-                // if (header.includes('franquicia')) card.franchise = this.mapFranchise(val); // Removed
+                if (header.includes('moneda')) card.currency = val.toUpperCase() === 'USD' ? Currency.USD : Currency.ARS;
                 if (header.includes('precio')) card.price = parseFloat(val) || 0;
                 if (header.includes('rareza')) card.rarity = val as any;
                 if (header.includes('estado')) card.condition = this.mapCondition(val);
                 if (header.includes('idioma')) card.language = this.mapLanguage(val);
-                if (header.includes('foto')) card.photoName = val; // Guardamos el nombre del archivo esperado
+                if (header.includes('foto')) card.photoName = val;
             });
 
             if (card.cardName) {
@@ -185,7 +188,7 @@ export class BulkUploadComponent {
                     language: card.language,
                     whatsappContact: this.globalWhatsApp(),
                     type: this.globalType(),
-                    currency: Currency.ARS,
+                    currency: card.currency || Currency.ARS,
                     description: card.description || 'Publicado masivamente',
                     imageUrl: imageUrl || undefined,
                     imagePath: imagePath || undefined
@@ -207,14 +210,59 @@ export class BulkUploadComponent {
     }
 
     downloadTemplate() {
-        const csvContent = "data:text/csv;charset=utf-8,Nombre,Precio,Rareza,Estado,Idioma,Foto\nCharizard Base Set,50000,Rare,Near Mint,ES,charizard.jpg\nBlack Lotus,100000,Rare,Mint,EN,lotus.png";
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "plantilla_tumarket.csv");
+        const franchise = this.globalFranchise();
+        const type = this.globalType();
+        const rarities = RARITIES_BY_FRANCHISE[franchise] || [];
+        const raritiesInfo = rarities.map(r => `${r.value}=${r.label}`).join(' | ');
+
+        // Construimos el contenido línea por línea en un array
+        const lines: string[] = [];
+
+        // 1. Comentarios de instrucción
+        lines.push(`# PLANTILLA PARA: ${type.toUpperCase()}`);
+        lines.push(`# FRANQUICIA: ${franchise}`);
+        lines.push(`# RAREZAS DISPONIBLES: ${raritiesInfo}`);
+        lines.push(`# ESTADOS: Mint | Near Mint | Excellent | Played | Heavy Played`);
+        lines.push(`# IDIOMAS: ES (Español) | EN (Inglés) | JP (Japonés)`);
+
+        let headers = '';
+        let example = '';
+
+        if (type === TradeType.VENDO) {
+            lines.push(`# MONEDAS: ARS | USD`);
+            headers = 'Nombre,Precio,Moneda,Rareza,Estado,Idioma,Foto';
+            example = `Charizard VMAX,15000,ARS,${rarities[0]?.value || 'RARE'},Near Mint,ES,charizard.jpg`;
+        } else {
+            headers = 'Nombre,Rareza,Estado,Idioma,Foto';
+            example = `Charizard VMAX,${rarities[0]?.value || 'RARE'},Near Mint,ES,charizard.jpg`;
+        }
+
+        // 2. Encabezados y ejemplo
+        lines.push(headers);
+        lines.push(example);
+
+        // 3. Generar el string final con saltos de línea correctos
+        const csvContent = lines.join('\n');
+
+        // 4. Crear el Blob y el link de descarga
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        // Nombre de archivo limpio
+        const safeFranchise = franchise.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '_');
+        const filename = `plantilla_${type.toLowerCase()}_${safeFranchise}.csv`;
+
+        link.href = url;
+        link.setAttribute('download', filename);
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+
+        // Limpiar
+        setTimeout(() => {
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }, 100);
     }
 
     removeCard(index: number) {

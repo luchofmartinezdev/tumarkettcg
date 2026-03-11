@@ -52,21 +52,24 @@ export interface RarityOption {
 // El Mapa Maestro de Rarezas por Franquicia
 export const RARITIES_BY_FRANCHISE: Record<Franchise, RarityOption[]> = {
   [Franchise.POKEMON]: [
-    { value: 'COMMON', label: 'Common (Común)' },
-    { value: 'UNCOMMON', label: 'Uncommon (Infrecuente)' },
-    { value: 'RARE', label: 'Rare (Rara)' },
+    { value: 'COMMON', label: 'Common (Común - ●)' },
+    { value: 'UNCOMMON', label: 'Uncommon (Infrecuente - ◆)' },
+    { value: 'RARE', label: 'Rare (Rara - ★)' },
+    { value: 'HOLO_RARE', label: 'Holo Rare (Rara Holo)' },
     { value: 'DOUBLE_RARE', label: 'Double Rare (RR)' },
     { value: 'ULTRA_RARE', label: 'Ultra Rare (UR)' },
     { value: 'ILLUSTRATION_RARE', label: 'Illustration Rare (IR)' },
     { value: 'SIR', label: 'Special Illustration Rare (SIR)' },
-    { value: 'HYPER_RARE', label: 'Hyper Rare (HR/Gold)' }
+    { value: 'HYPER_RARE', label: 'Hyper Rare (HR/Gold)' },
+    { value: 'PROMO', label: 'Promo' }
   ],
   [Franchise.MAGIC]: [
-    { value: 'COMMON', label: 'Common (Común)' },
-    { value: 'UNCOMMON', label: 'Uncommon (Infrecuente)' },
-    { value: 'RARE', label: 'Rare (Rara)' },
-    { value: 'MYTHIC', label: 'Mythic Rare (Mítica)' },
-    { value: 'SPECIAL', label: 'Special (Especial)' }
+    { value: 'COMMON', label: 'Common (Común - Negro)' },
+    { value: 'UNCOMMON', label: 'Uncommon (Infrecuente - Plata)' },
+    { value: 'RARE', label: 'Rare (Rara - Oro)' },
+    { value: 'MYTHIC', label: 'Mythic Rare (Mítica - Bronce)' },
+    { value: 'SPECIAL', label: 'Special (Especial)' },
+    { value: 'LAND', label: 'Basic Land' }
   ],
   [Franchise.YUGIOH]: [
     { value: 'COMMON', label: 'Common (Común)' },
@@ -75,8 +78,10 @@ export const RARITIES_BY_FRANCHISE: Record<Franchise, RarityOption[]> = {
     { value: 'ULTRA_RARE', label: 'Ultra Rare' },
     { value: 'SECRET_RARE', label: 'Secret Rare' },
     { value: 'ULTIMATE_RARE', label: 'Ultimate Rare' },
+    { value: 'COLLECTORS_RARE', label: 'Collector\'s Rare' },
     { value: 'QCSR', label: 'Quarter Century Secret Rare' },
-    { value: 'STARLIGHT', label: 'Starlight Rare' }
+    { value: 'STARLIGHT', label: 'Starlight Rare' },
+    { value: 'GHOST', label: 'Ghost Rare' }
   ],
   [Franchise.ONE_PIECE]: [
     { value: 'C', label: 'Common (C)' },
@@ -84,32 +89,35 @@ export const RARITIES_BY_FRANCHISE: Record<Franchise, RarityOption[]> = {
     { value: 'R', label: 'Rare (R)' },
     { value: 'SR', label: 'Super Rare (SR)' },
     { value: 'SEC', label: 'Secret Rare (SEC)' },
-    { value: 'LEADER', label: 'Leader (L)' },
+    { value: 'L', label: 'Leader (L)' },
+    { value: 'SP', label: 'Special (SP)' },
     { value: 'MANGA', label: 'Manga Rare' }
   ],
   [Franchise.DRAGON_BALL]: [
-    { value: 'C', label: 'Common' },
-    { value: 'UC', label: 'Uncommon' },
-    { value: 'R', label: 'Rare' },
-    { value: 'SR', label: 'Super Rare' },
-    { value: 'SCR', label: 'Secret Rare' },
-    { value: 'GDR', label: 'God Rare' }
+    { value: 'C', label: 'Common (C)' },
+    { value: 'UC', label: 'Uncommon (UC)' },
+    { value: 'R', label: 'Rare (R)' },
+    { value: 'SR', label: 'Super Rare (SR)' },
+    { value: 'SPR', label: 'Special Rare (SPR)' },
+    { value: 'SCR', label: 'Secret Rare (SCR)' },
+    { value: 'GDR', label: 'God Rare (GDR)' },
+    { value: 'L', label: 'Leader (L)' }
   ],
   [Franchise.LORCANA]: [
-    { value: 'COMMON', label: 'Common' },
-    { value: 'UNCOMMON', label: 'Uncommon' },
-    { value: 'RARE', label: 'Rare' },
-    { value: 'SUPER_RARE', label: 'Super Rare' },
-    { value: 'LEGENDARY', label: 'Legendary' },
-    { value: 'ENCHANTED', label: 'Enchanted' }
+    { value: 'COMMON', label: 'Common (Círculo)' },
+    { value: 'UNCOMMON', label: 'Uncommon (Libro)' },
+    { value: 'RARE', label: 'Rare (Triángulo)' },
+    { value: 'SUPER_RARE', label: 'Super Rare (Diamante)' },
+    { value: 'LEGENDARY', label: 'Legendary (Pentágono)' },
+    { value: 'ENCHANTED', label: 'Enchanted (Hexágono)' }
   ],
   [Franchise.DIGIMON]: [
-    { value: 'C', label: 'Common' },
-    { value: 'U', label: 'Uncommon' },
-    { value: 'R', label: 'Rare' },
-    { value: 'SR', label: 'Super Rare' },
-    { value: 'SEC', label: 'Secret Rare' },
-    { value: 'PARALLEL', label: 'Parallel Rare (Alt Art)' }
+    { value: 'C', label: 'Common (C)' },
+    { value: 'U', label: 'Uncommon (U)' },
+    { value: 'R', label: 'Rare (R)' },
+    { value: 'SR', label: 'Super Rare (SR)' },
+    { value: 'SEC', label: 'Secret Rare (SEC)' },
+    { value: 'PARALLEL', label: 'Parallel Rare (AA)' }
   ]
 };
 
@@ -168,7 +176,7 @@ export interface CardPost {
   soldAt?: Date;
   description: string;
   language: CardLanguage;
-  rarity: CardRarity;
+  rarity: string;
 
   // --- CAMPOS NUEVOS PARA IMÁGENES ---
   imageUrl?: string;     // La URL pública para mostrar en la web (<img> src)
