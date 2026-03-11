@@ -5,12 +5,13 @@ import { BannersComponent } from './banners/banners';
 import { CardService } from '../../core/services/cardService';
 import { AuthService } from '../../core/services/auth';
 import { ContactService } from '../../core/services/contact'; // 👈 importación añadida
-import { TradeType } from '../../core/models/site-config.model';
+import { Franchise, TradeType } from '../../core/models/site-config.model';
+import { CardComponent } from '../../shared/card/card';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, BannersComponent],
+  imports: [CommonModule, RouterModule, BannersComponent, CardComponent],
   templateUrl: './home.html'
 })
 export class HomeComponent implements OnInit {
@@ -20,6 +21,7 @@ export class HomeComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   public TradeType = TradeType;
+  public franchises = Object.values(Franchise);
 
   searchTerm = signal<string>('');
   filterType = signal<string | null>(null);
@@ -41,6 +43,21 @@ export class HomeComponent implements OnInit {
 
   public hasAnyPosts = computed(() => this.cardService.allPosts().length > 0);
 
+  public carouselsByFranchise = computed(() => {
+    const all = [...this.cardService.allPosts()];
+    return this.franchises.map(f => {
+      const cards = all
+        .filter(p => p.franchise === f)
+        .sort((a, b) => {
+          const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
+          const dateB = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        })
+        .slice(0, 8);
+      return { franchise: f, cards };
+    });
+  });
+
   filteredPosts = computed(() => {
     let posts = this.cardService.allPosts();
 
@@ -60,6 +77,13 @@ export class HomeComponent implements OnInit {
   updateSearch(event: Event) {
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
+  }
+
+  scrollCarousel(container: HTMLElement, distance: number) {
+    container.scrollBy({
+      left: distance,
+      behavior: 'smooth'
+    });
   }
 
   clearFilters() {
