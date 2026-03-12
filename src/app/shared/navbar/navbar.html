@@ -161,7 +161,7 @@
 
       @if (authService.currentUser(); as user) {
         <!-- Botón publicar -->
-        <div id="publish-menu-wrapper" class="relative hidden sm:block">
+        <div id="publish-menu-wrapper" class="relative">
           <button
             (click)="togglePublishMenu()"
             class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all shadow-md shadow-blue-100 dark:shadow-blue-900/20 active:scale-95 flex items-center gap-2"
@@ -233,20 +233,7 @@
           }
         </div>
 
-        <!-- Botón publicar versión móvil (mantiene el enlace directo + icono) -->
-        <a
-          routerLink="/publicar"
-          class="sm:hidden bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-100 dark:shadow-blue-900/20 active:scale-95 flex items-center gap-2"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.5"
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-        </a>
+
 
         <!-- Avatar + Dropdown -->
         <div id="user-menu-wrapper" class="relative">

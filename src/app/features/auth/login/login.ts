@@ -11,7 +11,7 @@ import { AuthService } from '../../../core/services/auth';
 export class LoginComponent {
   @ViewChild('googleBtn', { static: true }) googleBtn!: ElementRef;
 
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
   async onGoogleLogin() {
     await this.authService.loginWithGoogle();
   }

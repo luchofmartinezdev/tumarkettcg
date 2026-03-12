@@ -33,14 +33,20 @@
       <div class="flex justify-center w-full mt-4 mb-4">
         <button
           (click)="onGoogleLogin()"
-          class="flex items-center justify-center gap-2 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-semibold py-2 px-6 border border-gray-300 dark:border-slate-600 rounded-full shadow hover:bg-gray-50 dark:hover:bg-slate-600 transition"
+          [disabled]="authService.isLoading()"
+          class="flex items-center justify-center gap-2 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-semibold py-2 px-6 border border-gray-300 dark:border-slate-600 rounded-full shadow hover:bg-gray-50 dark:hover:bg-slate-600 transition disabled:opacity-50"
         >
-          <img
-            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-            alt="Google logo"
-            class="w-6 h-6"
-          />
-          Continuar con Google
+          @if (authService.isLoading()) {
+            <div class="animate-spin h-5 w-5 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+            <span>Procesando...</span>
+          } @else {
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google logo"
+              class="w-6 h-6"
+            />
+            Continuar con Google
+          }
         </button>
       </div>
 

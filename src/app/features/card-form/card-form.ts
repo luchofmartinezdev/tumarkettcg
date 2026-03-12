@@ -9,6 +9,7 @@ import { DropdownComponent } from '../../shared/dropdown/dropdown';
 import { ToastService } from '../../core/services/toast';
 import { firstValueFrom } from 'rxjs';
 import { extractShortId } from '../../shared/utils/slug';
+import { compressImage } from '../../shared/utils/image';
 
 @Component({
   selector: 'app-card-form',
@@ -64,9 +65,8 @@ export class CardFormComponent implements OnInit {
     type: [TradeType.VENDO, [Validators.required]],
     whatsappContact: ['', [
       Validators.required,
-      Validators.pattern('^[0-9]+$'),
-      Validators.minLength(10),
-      Validators.maxLength(15)
+      Validators.minLength(8),
+      Validators.maxLength(18)
     ]],
     description: ['', [Validators.maxLength(150)]],
   });
@@ -146,17 +146,29 @@ export class CardFormComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: any) {
+  async onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
-      this.selectedFile = file;
+      try {
+        this.isLoading = true; // Mostrar spinner mientras comprime
+        
+        // Comprimir imagen (máx 1200px, 70% calidad)
+        // Esto soluciona el problema de fotos de +10MB en el celular
+        const compressed = await compressImage(file, 1200, 0.7);
+        this.selectedFile = compressed;
 
-      // Crear la previsualización local
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result as string;
-      };
-      reader.readAsDataURL(file);
+        // Crear la previsualización local
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.imagePreview = reader.result as string;
+        };
+        reader.readAsDataURL(compressed);
+      } catch (error) {
+        console.error('Error al procesar la imagen:', error);
+        this.toastService.error('Hubo un error al procesar la foto. Intentá con otra.');
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 
@@ -251,7 +263,7 @@ export class CardFormComponent implements OnInit {
         language: val.language,
         rarity: val.rarity,
         type: val.type,
-        whatsappContact: val.whatsappContact,
+        whatsappContact: (val.whatsappContact || '').replace(/\D/g, ''),
         description: val.description || '',
         seriesName: val.seriesName || '',
         active: true,

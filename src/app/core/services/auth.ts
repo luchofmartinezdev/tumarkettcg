@@ -1,6 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Auth, signInWithEmailAndPassword, signOut, authState, User, GoogleAuthProvider, signInWithPopup } from '@angular/fire/auth';
+import { Auth, signInWithEmailAndPassword, signOut, authState, User, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from '@angular/fire/auth';
 import { UserProfileService } from './user-profile';
 
 @Injectable({ providedIn: 'root' })
@@ -11,7 +11,8 @@ export class AuthService {
 
   // Ahora guarda un User de Firebase de verdad
   public currentUser = signal<User | null>(null);
-  public authReady = signal<boolean>(false); // ← agregá esta línea
+  public authReady = signal<boolean>(false);
+  public isLoading = signal<boolean>(false); // ← Nueva señal para el UI
   private pendingContact: any = null;
 
   constructor() {
@@ -23,17 +24,59 @@ export class AuthService {
         this.userProfileService.ensureProfile(user);
       }
     });
+
+    // Manejar el resultado de la redirección al volver a la app (importante para mobile)
+    this.handleRedirect();
+  }
+
+  private async handleRedirect() {
+    try {
+      this.isLoading.set(true);
+      const result = await getRedirectResult(this.fireAuth);
+      
+      if (result?.user) {
+        await this.userProfileService.ensureProfile(result.user);
+        this.router.navigate(['/']);
+      } else {
+        // Si entramos aquí es que volvimos de Google pero perdimos la sesión
+        // Esto suele pasar por restricciones de cookies en el navegador móvil
+        console.log('Redirect result is null');
+      }
+    } catch (error: any) {
+      console.error('Error detallado en redirect:', error);
+      alert('Error técnico: ' + error.code + '\n' + error.message);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
   // EL NUEVO LOGIN OFICIAL DE GOOGLE
   async loginWithGoogle() {
     try {
+      this.isLoading.set(true);
       const provider = new GoogleAuthProvider();
-      // Esto abre la ventanita clásica de "Elegir cuenta de Google"
+      
+      // Intentamos Popup para todos (es más confiable con IPs locales y HTTP)
+      // Los navegadores modernos móviles lo manejan bien si nace de un click.
       const result = await signInWithPopup(this.fireAuth, provider);
-      await this.userProfileService.ensureProfile(result.user);
-      this.router.navigate(['/']);
-    } catch (error) {
+      
+      if (result.user) {
+        await this.userProfileService.ensureProfile(result.user);
+        this.router.navigate(['/']);
+      }
+    } catch (error: any) {
       console.error('Error al iniciar sesión con Google:', error);
+      
+      // Fallback a Redirect solo si el Popup es bloqueado
+      if (error.code === 'auth/popup-blocked') {
+        const provider = new GoogleAuthProvider();
+        await signInWithRedirect(this.fireAuth, provider);
+      } else if (error.code === 'auth/unauthorized-domain') {
+        alert('⛔ TU IP NO ESTÁ AUTORIZADA\n\nDebes agregar 192.168.1.156 en la consola de Firebase > Authentication > Settings > Authorized Domains.');
+      } else {
+        alert('Error: ' + error.message);
+      }
+    } finally {
+      this.isLoading.set(false);
     }
   }
   // Método clásico de Login

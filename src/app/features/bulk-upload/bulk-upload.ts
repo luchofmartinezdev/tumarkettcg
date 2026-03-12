@@ -5,6 +5,7 @@ import { CardService } from '../../core/services/cardService';
 import { Franchise, TradeType, CardCondition, CardLanguage, Currency, CardPost, RARITIES_BY_FRANCHISE, SETS_BY_FRANCHISE, SETS_BY_FRANCHISE_JP } from '../../core/models/site-config.model';
 import { Router, RouterModule } from '@angular/router';
 import { ToastService } from '../../core/services/toast';
+import { compressImage } from '../../shared/utils/image';
 
 @Component({
     selector: 'app-bulk-upload',
@@ -197,8 +198,12 @@ export class BulkUploadComponent {
 
                 // Si la carta tiene referencia a una foto y esa foto fue subida
                 if (card.photoName && imagesMap.has(card.photoName)) {
-                    const file = imagesMap.get(card.photoName)!;
+                    let file = imagesMap.get(card.photoName)!;
                     try {
+                        // Comprimir si es necesario (Bulk upload también se beneficia)
+                        if (file.size > 1024 * 1024) { // Más de 1MB? Comprimir
+                            file = await compressImage(file, 1200, 0.7);
+                        }
                         const uploadRes = await this.cardService.uploadImage(file);
                         imageUrl = uploadRes.url;
                         imagePath = uploadRes.path;
