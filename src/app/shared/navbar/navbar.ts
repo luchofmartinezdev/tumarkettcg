@@ -4,7 +4,7 @@ import { AuthService } from '../../core/services/auth';
 import { CardService } from '../../core/services/cardService';
 import { TradeType } from '../../core/models/site-config.model';
 import { ThemeService } from '../../core/services/theme';
-import { ADMIN_EMAILS } from '../../core/constants/auth';
+import { CollectionResolverService } from '../../core/services/collection-resolver';
 
 import { CommonModule } from '@angular/common';
 
@@ -22,6 +22,7 @@ export class Navbar {
   private cardService = inject(CardService);
   private router = inject(Router);
   public themeService = inject(ThemeService);
+  private resolver = inject(CollectionResolverService);
 
   public searchTerm = signal('');
   public showResults = signal(false);
@@ -30,10 +31,7 @@ export class Navbar {
 
   public TradeType = TradeType;
 
-  public isAdmin = computed(() => {
-    const user = this.authService.currentUser();
-    return !!(user && user.email && ADMIN_EMAILS.includes(user.email));
-  });
+  public isAdmin = computed(() => this.resolver.isAdmin());
 
   public quickResults = computed(() => {
     const term = this.searchTerm().toLowerCase();

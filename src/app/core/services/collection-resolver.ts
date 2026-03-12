@@ -17,8 +17,21 @@ export class CollectionResolverService {
     { initialValue: [] as string[] }
   );
 
+  // Escucha en tiempo real el array de admins desde Firestore
+  public adminEmails = toSignal(
+    docData(doc(this.firestore, 'config/admins')).pipe(
+      map((data: any) => (data?.emails ?? []) as string[])
+    ),
+    { initialValue: [] as string[] }
+  );
+
   public postsCollection = computed(() => {
     const email = this.authService.currentUser()?.email?.toLowerCase() ?? '';
     return this.testEmails().includes(email) ? 'posts_test' : 'posts';
+  });
+
+  public isAdmin = computed(() => {
+    const email = this.authService.currentUser()?.email?.toLowerCase() ?? '';
+    return this.adminEmails().includes(email);
   });
 }

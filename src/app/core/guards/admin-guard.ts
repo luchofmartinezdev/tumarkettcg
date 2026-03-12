@@ -1,18 +1,17 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth';
+import { CollectionResolverService } from '../services/collection-resolver';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, map, take } from 'rxjs';
 
-import { ADMIN_EMAILS } from '../constants/auth';
-
 export const adminGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
+  const resolver = inject(CollectionResolverService);
   const router = inject(Router);
 
   const checkAdmin = () => {
-    const user = authService.currentUser();
-    if (user && user.email && ADMIN_EMAILS.includes(user.email)) {
+    if (resolver.isAdmin()) {
       return true;
     }
     router.navigate(['/']);
