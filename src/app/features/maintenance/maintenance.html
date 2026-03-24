@@ -1,0 +1,101 @@
+<div class="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-slate-950">
+  <!-- Gradient Background Layers -->
+  <div class="absolute inset-0">
+    <div
+      class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-600/10 blur-[130px] animate-pulse"
+    ></div>
+    <div
+      class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-fuchsia-600/10 blur-[130px] animate-pulse"
+      style="animation-delay: 2s;"
+    ></div>
+    <div
+      class="absolute top-[30%] left-[20%] w-[30%] h-[30%] rounded-full bg-blue-600/5 blur-[100px] animate-pulse"
+      style="animation-delay: 4s;"
+    ></div>
+  </div>
+
+  <!-- Content Glass Card -->
+  <div
+    class="relative z-10 w-full max-w-xl mx-4 p-10 md:p-14 rounded-[2.5rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl shadow-[0_0_100px_rgba(0,0,0,0.5)] text-center transition-all duration-700"
+  >
+    <!-- Visual Accent: Icon with Glow -->
+    <div class="mb-10 flex justify-center">
+      <div class="relative group">
+        <!-- Intense Glow -->
+        <div
+          class="absolute inset-0 rounded-3xl bg-indigo-500 blur-3xl opacity-30 group-hover:opacity-50 transition-opacity duration-1000"
+        ></div>
+
+        <!-- Float Animation and Icon Container -->
+        <div
+          class="relative w-24 h-24 bg-gradient-to-br from-indigo-500 via-indigo-600 to-fuchsia-600 rounded-3xl flex items-center justify-center shadow-[0_10px_40px_-10px_rgba(79,70,229,0.5)] transform rotate-6 group-hover:rotate-0 transition-transform duration-700 animate-[bounce_3s_infinite]"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-12 h-12 text-white/90"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M11.42 15.17L17.25 21A2.67 2.67 0 0021 17.25l-5.83-5.83m-4.25 4.25L5.17 9.42A2.67 2.67 0 119.42 5.17l5.75 5.75m-3.75 4.25H12M12 11.25H9.75M12 8.25h.008v.008H12V8.25z"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Typography -->
+    <div class="space-y-4 mb-10">
+      <h1
+        class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/60 tracking-tight"
+      >
+        Mantenimiento <br />
+        en Progreso
+      </h1>
+      <p class="text-slate-400 text-lg md:text-xl font-light leading-relaxed max-w-md mx-auto">
+        Estamos trabajando para brindarte una <span class="text-white font-medium">mejor experiencia</span>.
+        Volveremos en unos momentos.
+      </p>
+    </div>
+
+    <!-- Progress Visualization -->
+    <div class="relative w-full bg-white/5 h-2 rounded-full mb-12 overflow-hidden">
+      <div
+        class="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 via-sky-500 to-fuchsia-500 w-[70%] rounded-full animate-pulse shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+      ></div>
+    </div>
+
+    <!-- Footer & Contact -->
+    <div class="pt-8 border-t border-white/5 space-y-6">
+      <div class="flex flex-col items-center gap-1">
+        <span class="text-slate-500 text-sm font-semibold tracking-widest uppercase"
+          >¿Problemas urgentes?</span
+        >
+        <a
+          href="mailto:contacto@gmail.com"
+          class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-fuchsia-400 font-medium text-lg hover:scale-105 transition-transform duration-300"
+        >
+          contacto@gmail.com
+        </a>
+      </div>
+
+      <!-- Social (Dummy for now) -->
+      <div class="flex justify-center gap-6 opacity-40 hover:opacity-100 transition-opacity">
+        <div class="w-8 h-8 rounded-full border border-white/20"></div>
+        <div class="w-8 h-8 rounded-full border border-white/20"></div>
+        <div class="w-8 h-8 rounded-full border border-white/20"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decorative Sparkles -->
+  <div class="absolute top-1/4 right-[15%] w-1 h-1 bg-white rounded-full animate-ping"></div>
+  <div
+    class="absolute bottom-1/3 left-[10%] w-1 h-1 bg-white rounded-full animate-ping"
+    style="animation-delay: 1.5s;"
+  ></div>
+</div>

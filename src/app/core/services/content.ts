@@ -6,8 +6,10 @@ import { SiteConfig } from '../models/site-config.model';
 })
 export class ContentService {
   searchTerm = signal<string>('');
+  maintenanceMode = signal<boolean>(true);
 
   private readonly config: SiteConfig = {
+    maintenanceMode: true,
     logoName: 'POKÉMON STORE',
     navLinks: [
       { label: 'Productos', path: '/productos' },

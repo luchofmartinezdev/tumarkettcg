@@ -436,6 +436,7 @@ export interface CardPost {
 }
 
 export interface SiteConfig {
+  maintenanceMode: boolean;
   logoName: string;
   navLinks: { label: string; path: string }[];
   hero: {
