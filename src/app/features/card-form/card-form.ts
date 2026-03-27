@@ -10,6 +10,7 @@ import { ToastService } from '../../core/services/toast';
 import { firstValueFrom } from 'rxjs';
 import { extractShortId } from '../../shared/utils/slug';
 import { compressImage } from '../../shared/utils/image';
+import { AiService } from '../../core/services/ai';
 
 @Component({
   selector: 'app-card-form',
@@ -146,6 +147,9 @@ export class CardFormComponent implements OnInit {
     });
   }
 
+  private aiService = inject(AiService);
+  isScanning = false;
+  
   async onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -153,7 +157,6 @@ export class CardFormComponent implements OnInit {
         this.isLoading = true; // Mostrar spinner mientras comprime
         
         // Comprimir imagen (máx 1200px, 70% calidad)
-        // Esto soluciona el problema de fotos de +10MB en el celular
         const compressed = await compressImage(file, 1200, 0.7);
         this.selectedFile = compressed;
 
@@ -163,6 +166,10 @@ export class CardFormComponent implements OnInit {
           this.imagePreview = reader.result as string;
         };
         reader.readAsDataURL(compressed);
+
+        // --- ESCANEO CON GEMINI ---
+        this.detectCardData(compressed);
+
       } catch (error) {
         console.error('Error al procesar la imagen:', error);
         this.toastService.error('Hubo un error al procesar la foto. Intentá con otra.');
@@ -170,6 +177,52 @@ export class CardFormComponent implements OnInit {
         this.isLoading = false;
       }
     }
+  }
+
+  private async detectCardData(file: File) {
+    try {
+      this.isScanning = true;
+      const base64 = await this.fileToBase64(file);
+      const mediaType = file.type;
+
+      const result = await this.aiService.scanCard(base64, mediaType);
+      
+      if (result) {
+        this.toastService.success('Datos auto-completados por IA');
+        
+        // Mapear los datos de vuelta al formulario
+        this.cardForm.patchValue({
+          cardName: result.cardName,
+          franchise: result.franchise,
+          condition: result.condition,
+          language: result.language,
+          rarity: result.rarity,
+          seriesName: result.seriesName,
+          setName: result.setName,
+          cardNumber: result.cardNumber
+        });
+
+        // Forzar actualización de listados dependientes (setNames, seriesNames, etc)
+        // updateAvailableCatalog es llamado automáticamente por el listener de franchise
+      }
+    } catch (e: any) {
+      console.error('AI Scan Error:', e);
+      this.toastService.error('No se pudo analizar la imagen con IA.');
+    } finally {
+      this.isScanning = false;
+    }
+  }
+
+  private fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        resolve(result.split(',')[1]); // Quitar el prefijo data:image/...;base64,
+      };
+      reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
+    });
   }
 
   // Cuando el usuario cambia la franquicia en el HTML
